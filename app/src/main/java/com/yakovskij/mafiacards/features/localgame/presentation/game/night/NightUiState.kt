@@ -9,8 +9,11 @@ data class NightUiState(
     val promptText: String = "",
     val availableTargets: List<Player> = emptyList(),
     val isActionTaken: Boolean = false,
-    val timeLeftSeconds: Float = 0f,
     val isNightFinished: Boolean = false,
+    val timeLeftSeconds: Float = 0f,
+    val isTimeExpired: Boolean = false,
     val timeToAction: Int = 0,
-    val shouldInit: Boolean = true
+    val shouldInit: Boolean = true,
+    val nightPlayersQueue: List<Player> = emptyList(),
+    val nightIndex: Int = 0,
 )

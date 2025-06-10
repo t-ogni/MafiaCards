@@ -61,7 +61,7 @@ fun DealCardsScreen(
                     Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
                         if (state.isCardFlipped) {
                             Text(
-                                state.currentPlayer?.role?.type?.title ?: "Неизвестно",
+                                state.currentPlayer?.role?.title ?: "Неизвестно",
                                 style = MaterialTheme.typography.headlineMedium,
                                 fontWeight = FontWeight.Bold
                             )

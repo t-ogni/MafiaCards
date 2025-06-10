@@ -63,7 +63,7 @@ class GamePhaseTest {
         assertNotNull(voteProcessor.calculateVotesAndJail()) // проголосовал
 
         // Добавим ночное действие (допустим, от DOCTOR)
-        engine.user(3).targets(1, RoleType.DOCTOR)
+        engine.user(3).targets(1)
         assertFalse(nightProcessor.getActions().isEmpty())
 
         engine.advancePhase() // NIGHT → DAY_DISCUSSION

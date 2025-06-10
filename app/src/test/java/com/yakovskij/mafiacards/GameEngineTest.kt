@@ -27,10 +27,10 @@ class GameEngineTest {
 
         engine.startGame()
 
-        val mafia = session.state.players.find { it.role?.type == RoleType.MAFIA }!!
-        val civ = session.state.players.filter { it.role?.type == RoleType.CIVILIAN }
+        val mafia = session.state.players.find { it.role == RoleType.MAFIA }!!
+        val civ = session.state.players.filter { it.role == RoleType.CIVILIAN }
 
-        engine.user(mafia.id).targets(civ.first().id, RoleType.MAFIA)
+        engine.user(mafia.id).targets(civ.first().id)
         engine.performNightActions()
 
         val result = engine.checkWinCondition() == RoleType.MAFIA
@@ -57,12 +57,12 @@ class GameEngineTest {
 
         engine.startGame()
 
-        val mafia = session.state.players.firstOrNull { it.role?.type == RoleType.MAFIA }!!
-        val doc = session.state.players.firstOrNull { it.role?.type == RoleType.DOCTOR }!!
-        val civ = session.state.players.firstOrNull { it.role?.type == RoleType.CIVILIAN }!!
+        val mafia = session.state.players.firstOrNull { it.role == RoleType.MAFIA }!!
+        val doc = session.state.players.firstOrNull { it.role == RoleType.DOCTOR }!!
+        val civ = session.state.players.firstOrNull { it.role == RoleType.CIVILIAN }!!
 
-        engine.user(mafia.id).targets(civ.id, mafia.role?.type!!)
-        engine.user(doc.id).targets(civ.id, doc.role?.type!!)
+        engine.user(mafia.id).targets(civ.id)
+        engine.user(doc.id).targets(civ.id)
 
         engine.performNightActions()
 
@@ -88,9 +88,9 @@ class GameEngineTest {
 
         engine.performNightActions()
 
-        val mafia = session.state.players.firstOrNull { it.role?.type == RoleType.MAFIA }!!
-        val doc = session.state.players.firstOrNull { it.role?.type == RoleType.DOCTOR }!!
-        val civ = session.state.players.firstOrNull { it.role?.type == RoleType.CIVILIAN }!!
+        val mafia = session.state.players.firstOrNull { it.role == RoleType.MAFIA }!!
+        val doc = session.state.players.firstOrNull { it.role == RoleType.DOCTOR }!!
+        val civ = session.state.players.firstOrNull { it.role == RoleType.CIVILIAN }!!
 
         engine.user(mafia.id).voted(doc.id)
         engine.user(civ.id).voted(doc.id)

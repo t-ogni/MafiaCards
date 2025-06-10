@@ -3,7 +3,6 @@ package com.yakovskij.mafiacards.features.game.data
 import com.yakovskij.mafiacards.features.game.domain.GameException
 import com.yakovskij.mafiacards.features.game.domain.GameSettings
 import com.yakovskij.mafiacards.features.game.domain.Player
-import com.yakovskij.mafiacards.features.game.domain.RoleCard
 import com.yakovskij.mafiacards.features.game.domain.RoleType
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -25,6 +24,7 @@ class GameRepository @Inject constructor() {
     fun saveSettings(settings: GameSettings){
         this.settings = settings
     }
+
 
     fun startGame(players: List<Player>, settings: GameSettings? = null) {
         if(settings != null)
@@ -51,12 +51,7 @@ class GameRepository @Inject constructor() {
         engine?.setSession(newSessionObj)
     }
 
-    fun user(id: Int) = engine?.user(id)
-
     fun getState() = session?.state
+    fun getSettings() = this.settings
 
-    fun advancePhase() = engine?.advancePhase()
-    fun performNightActions() = engine?.performNightActions()
-    fun calculateVotesAndJail(): Int? = engine?.calculateVotesAndJail()
-    fun checkWinCondition(): RoleType? = engine?.checkWinCondition()
 }

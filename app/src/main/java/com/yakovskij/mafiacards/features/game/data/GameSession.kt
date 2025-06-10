@@ -6,7 +6,6 @@ import com.yakovskij.mafiacards.features.game.domain.GameException
 import com.yakovskij.mafiacards.features.game.domain.GameState
 import com.yakovskij.mafiacards.features.game.domain.NightAction
 import com.yakovskij.mafiacards.features.game.domain.Player
-import com.yakovskij.mafiacards.features.game.domain.RoleCard
 import com.yakovskij.mafiacards.features.game.domain.RoleType
 
 
@@ -18,7 +17,6 @@ class GameSession(
 ) {
     private val _state = GameState(
         players = emptyList(),
-        deck = emptyList(),
         currentPhase = GamePhase.SETUP,
         turnNumber = 0,
         winner = null
@@ -49,7 +47,6 @@ class GameSession(
         _state.players = assignedPlayers
         _state.winner = null
         _state.currentPhase = GamePhase.SETUP
-        _state.deck = deck
         _state.turnNumber = 0
     }
 
@@ -61,16 +58,16 @@ class GameSession(
         _state.winner = winner
     }
 
-    private fun generateDeck(): List<RoleCard> {
-        val deck = mutableListOf<RoleCard>()
+    private fun generateDeck(): List<RoleType> {
+        val deck = mutableListOf<RoleType>()
 
         // Добавляем роли
-        repeat(settings.mafiaCount) { deck.add(RoleCard(RoleType.MAFIA)) }
-        repeat(settings.doctorCount) { deck.add(RoleCard(RoleType.DOCTOR)) }
-        repeat(settings.detectiveCount) { deck.add(RoleCard(RoleType.DETECTIVE)) }
+        repeat(settings.mafiaCount) { deck.add(RoleType.MAFIA) }
+        repeat(settings.doctorCount) { deck.add(RoleType.DOCTOR) }
+        repeat(settings.detectiveCount) { deck.add(RoleType.DETECTIVE) }
 
         while (deck.size < settings.totalPlayers) {
-            deck.add(RoleCard(RoleType.CIVILIAN))
+            deck.add(RoleType.CIVILIAN)
         }
 
         return deck
@@ -79,6 +76,13 @@ class GameSession(
     fun eliminatePlayer(playerId: Int) {
         val updated = _state.players.map {
             if (it.id == playerId) it.copy(isAlive = false) else it
+        }
+        _state.players = updated
+    }
+
+    fun revivalPlayer(playerId: Int) {
+        val updated = _state.players.map {
+            if (it.id == playerId) it.copy(isAlive = true) else it
         }
         _state.players = updated
     }

@@ -33,8 +33,8 @@ class GameEngine(
     fun performNightActions() = nightProcessor.performNightActions()
 
     fun checkWinCondition(): RoleType? {
-        val mafiaAlive = session.state.players.count { it.role?.type == RoleType.MAFIA && it.isAlive }
-        val civiliansAlive = session.state.players.count { it.role?.type != RoleType.MAFIA && it.isAlive }
+        val mafiaAlive = session.state.players.count { it.role == RoleType.MAFIA && it.isAlive }
+        val civiliansAlive = session.state.players.count { it.role != RoleType.MAFIA && it.isAlive }
 
         return when {
             mafiaAlive == 0 -> RoleType.CIVILIAN
@@ -96,9 +96,9 @@ class GameEngine(
             return this
         }
 
-        fun targets(targetId: Int?, role: RoleType): PlayerController {
+        fun targets(targetId: Int?): PlayerController {
             if (targetId != null) {
-                engine.nightProcessor.addAction(performerId, targetId, role)
+                engine.nightProcessor.addAction(performerId, targetId)
             }
             return this
         }

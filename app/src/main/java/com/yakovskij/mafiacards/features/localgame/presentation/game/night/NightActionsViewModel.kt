@@ -7,7 +7,6 @@ import androidx.lifecycle.viewModelScope
 import com.yakovskij.mafiacards.features.game.data.*
 import com.yakovskij.mafiacards.features.game.domain.*
 import com.yakovskij.mafiacards.features.localgame.data.GameSettingsRepository
-import com.yakovskij.mafiacards.features.localgame.presentation.game.GameUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -25,34 +24,44 @@ class NightActionsViewModel @Inject constructor(
 
     private var timerJob: Job? = null
 
-    private var nightPlayersQueue: List<Player> = emptyList()
-    private var nightIndex = 0
-
     private val _uiState = mutableStateOf(NightUiState())
     val uiState: State<NightUiState> = _uiState
 
-    fun initNight() {
+
+    fun startNight(){
+        initNightState()
+        nextUser()
+    }
+
+    fun initNightState() {
         if (!_uiState.value.shouldInit) return
-
         timerJob?.cancel()
-        nightIndex = 0
-        nightPlayersQueue = engine.getSession().state.players.filter { it.isAlive }
 
-        _uiState.value = NightUiState(shouldInit = false)
-        nextNightTurn()
+        _uiState.value = _uiState.value.copy(
+            nightIndex = 0,
+            nightPlayersQueue = engine.getSession().state.players.filter { it.isAlive },
+            shouldInit = false
+        )
+    }
+
+    fun resetNightState() {
+        _uiState.value = NightUiState()
     }
 
 
-    private fun nextNightTurn() {
-        timerJob?.cancel() // остановить предыдущий таймер, если есть
+    fun nextUser() {
+        if (_uiState.value.shouldInit) initNightState()
 
-        if (nightIndex >= nightPlayersQueue.size) {
+        timerJob?.cancel() // остановить предыдущий таймер, если есть
+        if (_uiState.value.nightIndex >= _uiState.value.nightPlayersQueue.size) {
             _uiState.value = _uiState.value.copy(isNightFinished = true)
+            engine.performNightActions()
             return
         }
-
-        val player = nightPlayersQueue[nightIndex]
-        val role = player.role?.type
+        val index = _uiState.value.nightIndex
+        val queue = _uiState.value.nightPlayersQueue
+        val player = queue[index]
+        val role = player.role
 
         val prompt = when (role) {
             RoleType.MAFIA -> "Вы мафия. Выберите игрока для устранения:"
@@ -64,7 +73,7 @@ class NightActionsViewModel @Inject constructor(
 
         val targets = gameRepository.getState()?.players?.filter { it.id != player.id && it.isAlive } ?: emptyList()
 
-        _uiState.value = NightUiState(
+        _uiState.value = _uiState.value.copy(
             currentPlayer = player,
             role = role,
             promptText = prompt,
@@ -72,22 +81,27 @@ class NightActionsViewModel @Inject constructor(
             isActionTaken = false,
             timeLeftSeconds = settingsRepository.getTimerSettings().nightTime.toFloat()
         )
-
-        startNightTimer()
     }
 
-    private fun startNightTimer() {
-        _uiState.value = _uiState.value.copy(timeToAction = settingsRepository.getTimerSettings().nightTime)
+    fun startNightTimer() {
+        val nightTime = settingsRepository.getTimerSettings().nightTime
+        _uiState.value = _uiState.value.copy(
+            timeToAction = nightTime,
+            timeLeftSeconds = nightTime.toFloat(),
+            isTimeExpired = false // сбрасываем
+        )
 
         timerJob = viewModelScope.launch {
             while (_uiState.value.timeLeftSeconds > 0) {
-                delay(100)
+                delay(1000)
                 _uiState.value = _uiState.value.copy(
-                    timeLeftSeconds = _uiState.value.timeLeftSeconds - 0.1f
+                    timeLeftSeconds = _uiState.value.timeLeftSeconds - 1f
                 )
             }
             if (!_uiState.value.isActionTaken) {
-                onNightActionSelected(null) // игрок не сделал выбор — пропускаем
+                _uiState.value = _uiState.value.copy(isTimeExpired = true) // <- таймер завершён
+                delay(500) // небольшая пауза для UI эффекта
+                onNightActionSelected(null)
             }
         }
     }
@@ -97,15 +111,27 @@ class NightActionsViewModel @Inject constructor(
         val role = _uiState.value.role ?: return
 
         if (target != null) {
-            engine.user(player.id).targets(target.id, role)
+            engine.user(player.id).targets(target.id)
         }
 
-        _uiState.value = _uiState.value.copy(isActionTaken = true)
+        _uiState.value = _uiState.value.copy(
+            isActionTaken = true,
+            isTimeExpired = false
+        )
+
         timerJob?.cancel() // остановить таймер
 
         viewModelScope.launch {
-            nightIndex++
-            nextNightTurn()
+            delay(500)
+            _uiState.value = _uiState.value.copy(
+                nightIndex = _uiState.value.nightIndex + 1
+            )
+            nextUser()
         }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        timerJob?.cancel() // Потенциальное утекание памяти
     }
 }

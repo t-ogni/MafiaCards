@@ -8,6 +8,7 @@ import com.yakovskij.mafiacards.features.game.domain.GameSettings
 import com.yakovskij.mafiacards.features.game.domain.Player
 import com.yakovskij.mafiacards.features.localgame.data.GameSettingsRepository
 import com.yakovskij.mafiacards.features.localgame.domain.TimerSettings
+import com.yakovskij.mafiacards.features.localgame.presentation.setupPlayers.players
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
@@ -55,6 +56,10 @@ class SetupGameViewModel @Inject constructor(
         return settingsRepository.getGameSettings() to settingsRepository.getTimerSettings()
     }
     fun startGame() {
+        if(settingsRepository.getTotalActiveRolesCount() < settingsRepository.getGameSettings().totalPlayers) {
+            settingsRepository.updateTotalPlayers(settingsRepository.getTotalActiveRolesCount())
+        }
+
         gameRepository.saveSettings(settingsRepository.getGameSettings())
         val mockPlayers = listOf<Player>(
             Player(1, "Мышь"),

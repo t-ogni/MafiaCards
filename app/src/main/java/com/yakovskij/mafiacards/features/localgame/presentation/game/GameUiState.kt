@@ -7,6 +7,7 @@ import com.yakovskij.mafiacards.features.game.domain.RoleType
 data class GameUiState(
     val previousPhase: GamePhase = GamePhase.SETUP,
     val phase: GamePhase = GamePhase.SETUP,
+    val hasProceededToNextPhase: Boolean = false,
     val error: String? = null,
 )
 

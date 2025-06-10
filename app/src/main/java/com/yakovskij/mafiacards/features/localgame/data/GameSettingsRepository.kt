@@ -34,6 +34,14 @@ class GameSettingsRepository @Inject constructor() {
     fun getDoctorCount() = gameSettings.doctorCount
     fun getDetectiveCount() = gameSettings.detectiveCount
 
+    fun getTotalActiveRolesCount(): Int {
+        return (
+                gameSettings.mafiaCount +
+                gameSettings.doctorCount +
+                gameSettings.mafiaCount
+                )
+    }
+
     fun updateDayTime(seconds: Int) {
         timerSettings = timerSettings.copy(dayTime = seconds)
     }

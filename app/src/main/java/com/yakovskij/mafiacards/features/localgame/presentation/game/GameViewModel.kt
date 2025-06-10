@@ -28,11 +28,12 @@ class GameViewModel @Inject constructor(
         val newPhase = engine.getSession().state.currentPhase
 
         _uiState.value = _uiState.value.copy(
-            phase = newPhase
+            phase = newPhase,
+            hasProceededToNextPhase = false
         )
     }
 
-    fun refreshUI() {
-        _uiState.value = _uiState.value.copy(phase = gameRepository.getState()?.currentPhase ?: GamePhase.SETUP)
+    fun markPhaseAsCompleted() {
+        _uiState.value = _uiState.value.copy(hasProceededToNextPhase = true)
     }
 }

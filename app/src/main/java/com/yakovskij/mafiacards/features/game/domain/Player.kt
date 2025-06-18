@@ -1,8 +1,0 @@
-package com.yakovskij.mafiacards.features.game.domain
-
-data class Player(
-    val id: Int,
-    val name: String,
-    val role: RoleType? = null,
-    val isAlive: Boolean = true
-)

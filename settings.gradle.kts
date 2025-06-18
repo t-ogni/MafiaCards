@@ -20,5 +20,6 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "MafiaCards"
-include(":app")
- 
+include(":mafia_app")
+include(":mafia_engine")
+include(":mafia_server")

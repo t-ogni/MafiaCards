@@ -3,10 +3,7 @@ plugins {
     alias(libs.plugins.android.application) apply false
     alias(libs.plugins.kotlin.android) apply false
     alias(libs.plugins.kotlin.compose) apply false
-}
-buildscript {
-    val hilt_version = "2.56.2"
-    dependencies {
-        classpath("com.google.dagger:hilt-android-gradle-plugin:$hilt_version")
-    }
+    alias(libs.plugins.jetbrains.kotlin.jvm) apply false
+    alias(libs.plugins.hilt) apply false
+    alias(libs.plugins.ksp) apply false
 }

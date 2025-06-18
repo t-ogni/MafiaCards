@@ -1,10 +1,7 @@
 package com.yakovskij.mafiacards
 
-import com.yakovskij.mafiacards.features.game.data.GameEngine
-import com.yakovskij.mafiacards.features.game.data.GameSession
-import com.yakovskij.mafiacards.features.game.domain.GameSettings
-import com.yakovskij.mafiacards.features.game.domain.Player
-import com.yakovskij.mafiacards.features.game.domain.RoleType
+import com.yakovskij.mafia_engine.*
+import com.yakovskij.mafia_engine.domain.*
 import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -69,6 +66,7 @@ class GameEngineTest {
         val civAfterAction = session.state.players.firstOrNull { it.id == civ.id }!!
         assertTrue(civAfterAction.isAlive, "Житель не живой. должен был выжить")
     }
+
     @Test
     fun `Кик на голосовании`() {
         val settings = GameSettings(3, 1, 1, 0)

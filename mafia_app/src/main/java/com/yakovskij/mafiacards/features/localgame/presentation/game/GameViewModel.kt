@@ -13,8 +13,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class GameViewModel @Inject constructor(
-    private val gameRepository: GameRepository,
-    private val settingsRepository: GameSettingsRepository
+    private val gameRepository: GameRepository
 ) : ViewModel() {
 
     private var engine: GameEngine = gameRepository.engine!!

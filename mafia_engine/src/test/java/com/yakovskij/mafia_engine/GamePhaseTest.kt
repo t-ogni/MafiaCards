@@ -1,7 +1,7 @@
 package com.yakovskij.mafiacards
 
-import com.yakovskij.mafiacards.features.game.data.*
-import com.yakovskij.mafiacards.features.game.domain.*
+import com.yakovskij.mafia_engine.*
+import com.yakovskij.mafia_engine.domain.*
 
 import org.junit.Before
 import org.junit.Test
@@ -82,6 +82,4 @@ class GamePhaseTest {
         assertEquals(GamePhase.END, session.state.currentPhase)
         assertEquals(RoleType.MAFIA, session.state.winner)
     }
-
-
 }

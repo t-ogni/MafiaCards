@@ -21,7 +21,6 @@ import com.yakovskij.mafiacards.features.localgame.presentation.game.prop.PropSc
 @Composable
 fun GameScreen(
     gameViewModel: GameViewModel = hiltViewModel(),
-    nightActionsViewModel: NightActionsViewModel = hiltViewModel()
 ) {
     val uiState by gameViewModel.uiState
 

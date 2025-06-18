@@ -69,10 +69,21 @@ class NightActionsViewModel @Inject constructor(
             RoleType.DOCTOR -> "Вы доктор. Кого будете лечить?"
             RoleType.DETECTIVE -> "Вы детектив. Кого будете проверять?"
             RoleType.CIVILIAN, null -> "Вы мирный. Сделайте вид, что участвуете ночью.\nКто вам больше всего нравится?"
-            else ->  "Вы — Непонятная мне роль."
+            else ->  "Вы — ${role.title}. Выполните ваше действие."
         }
 
-        val targets = gameRepository.getState()?.players?.filter { it.id != player.id && it.isAlive } ?: emptyList()
+        val allTargets = gameRepository.getState()?.players ?: emptyList()
+        val aliveTargets = allTargets.filter { it.isAlive  && it.id != player.id }
+        val aliveTargetsIncludingItself = allTargets.filter { it.isAlive }
+
+        val targets : List<Player> = when (role) {
+            RoleType.MAFIA -> aliveTargets.filter { it.role != RoleType.MAFIA }
+            RoleType.DOCTOR -> aliveTargetsIncludingItself
+            RoleType.DETECTIVE -> aliveTargets
+            RoleType.CIVILIAN, null -> aliveTargetsIncludingItself
+            else ->  allTargets
+        }
+
 
         _uiState.value = _uiState.value.copy(
             currentPlayer = player,
@@ -109,7 +120,6 @@ class NightActionsViewModel @Inject constructor(
 
     fun onNightActionSelected(target: Player?) {
         val player : Player = _uiState.value.currentPlayer ?: return
-        val role = _uiState.value.role ?: return
 
         if (target != null) {
             engine.user(player.id).targets(target.id)

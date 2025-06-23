@@ -21,7 +21,7 @@ class NightActionsViewModel @Inject constructor(
     private var settingsRepository: GameSettingsRepository,
 ) : ViewModel() {
 
-    private var engine: GameEngine = gameRepository.engine!!
+    private var engine: GameEngine = gameRepository.getEngine()
 
     private var timerJob: Job? = null
 

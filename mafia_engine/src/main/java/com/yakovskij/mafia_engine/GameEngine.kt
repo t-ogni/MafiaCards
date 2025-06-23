@@ -83,7 +83,7 @@ class GameEngine(
         // gameLog.add(PhaseChangedEvent(phase))
     }
 
-    fun getNightResults(): List<NightAction> = nightProcessor.getLastNightResults()
+    fun getNightResults(): List<NightEvent> = nightProcessor.getLastNightEvents()
 
 
     inner class PlayerController(private val performerId: Int, private val engine: GameEngine) {

@@ -18,6 +18,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.yakovskij.mafiacards.core.ui.components.StyledIconButton
 
 @Composable
 fun SetupGameScreen(
@@ -63,12 +64,8 @@ fun SettingRow(label: String, value: Int, onValueChange: (Int) -> Unit) {
         modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
     ) {
         Text(label, modifier = Modifier.defaultMinSize(150.dp, Dp.Unspecified))
-        IconButton(onClick = { if (value > 1) onValueChange(value - 1) }) {
-            Icon(Icons.Default.KeyboardArrowLeft, contentDescription = "Decrease")
-        }
+        StyledIconButton(icon = Icons.Default.KeyboardArrowLeft, contentDescription = "Decrease", onClick = { if (value > 1) onValueChange(value - 1) })
         Text("$value", modifier = Modifier.defaultMinSize(30.dp, Dp.Unspecified), textAlign = TextAlign.Center)
-        IconButton(onClick = { onValueChange(value + 1) }) {
-            Icon(Icons.Default.KeyboardArrowRight, contentDescription = "Increase")
-        }
+        StyledIconButton(icon = Icons.Default.KeyboardArrowRight, contentDescription = "Increase", onClick = { onValueChange(value + 1) })
     }
 }

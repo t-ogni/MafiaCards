@@ -17,8 +17,8 @@ import javax.inject.Singleton
 class GameRepository @Inject constructor() {
 
     private var session: GameSession? = null
-    var engine: GameEngine? = null
-        private set
+    private var engine: GameEngine? = null
+
     private var settings: GameSettings? = null
 
     fun saveSettings(settings: GameSettings){
@@ -50,7 +50,7 @@ class GameRepository @Inject constructor() {
         engine?.setSession(newSessionObj)
     }
 
-    fun getState() = session?.state
-    fun getSettings() = this.settings
-
+    fun getState() = session?.state!!
+    fun getSettings() = this.settings!!
+    fun getEngine() = this.engine!!
 }

@@ -1,12 +1,11 @@
 package com.yakovskij.mafia_engine
 
 import com.yakovskij.mafia_engine.domain.*
+import kotlin.collections.mutableListOf
 
 class NightProcessor(private var session: GameSession) {
     private val actions = mutableListOf<NightAction>()
-    private var lastNightResults: List<NightAction> = emptyList()
-
-    fun getLastNightResults(): List<NightAction> = lastNightResults
+    private val events = mutableListOf<NightEvent>()
 
     fun addAction(performerId: Int, targetId: Int) {
         val performer = session.state.players.firstOrNull { it.id == performerId }!!
@@ -23,19 +22,23 @@ class NightProcessor(private var session: GameSession) {
     }
 
     fun getActions(): List<NightAction> = actions.toList()
+    fun getLastNightEvents(): List<NightEvent> = events.toList()
+
     fun clearUserActions(performerId: Int): Boolean = actions.removeAll { it.performer.id == performerId }
 
     fun clearActions() {
         actions.clear()
     }
 
+    fun clearEvents() {
+        events.clear()
+    }
     fun setSession(newSession: GameSession) {
         session = newSession
     }
 
     fun performNightActions(): List<NightEvent> {
-        val events = mutableListOf<NightEvent>()
-
+        clearEvents()
         val players = session.state.players
 
         val blockActions = actions.filter { it.performer.role == RoleType.SLUT }

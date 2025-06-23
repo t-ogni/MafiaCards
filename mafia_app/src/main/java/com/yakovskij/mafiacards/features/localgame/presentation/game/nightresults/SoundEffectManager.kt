@@ -1,4 +1,4 @@
-package com.yakovskij.mafiacards.features.localgame.presentation.game.discussion
+package com.yakovskij.mafiacards.features.localgame.presentation.game.nightresults
 
 import android.content.Context
 import android.media.SoundPool

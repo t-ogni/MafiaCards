@@ -82,107 +82,109 @@ fun DealCardsScreen(
                         }
                     }
                 } else {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
 
-                    AnimatedContent(
-                        targetState = state.currentPlayer.name,
-                        transitionSpec = {
-                            slideInHorizontally { fullWidth -> fullWidth } + fadeIn() with
-                                    slideOutHorizontally { fullWidth -> -fullWidth } + fadeOut()
-                        },
-                        label = "PlayerNameTransition"
-                    ) { name ->
-                        Text(
-                            text = "$name, ваша карта",
-                            style = MaterialTheme.typography.headlineSmall,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
-
-
-                    Spacer(Modifier.height(16.dp))
-                    Box(
-                        Modifier.fillMaxWidth().height(300.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .align(Alignment.CenterEnd)
-                                .size(width = 100.dp, height = 150.dp)
-                                .graphicsLayer { rotationZ = 5f }
-                                .background(
-                                    Color.DarkGray.copy(alpha = 0.2f),
-                                    RoundedCornerShape(8.dp)
-                                )
-                        )
-                        Box(
-                            modifier = Modifier
-                                .align(Alignment.CenterEnd)
-                                .size(width = 100.dp, height = 150.dp)
-                                .graphicsLayer { rotationZ = -4f }
-                                .background(
-                                    Color.DarkGray.copy(alpha = 0.2f),
-                                    RoundedCornerShape(8.dp)
-                                )
-                        )
-                        Box(
-                            modifier = Modifier
-                                .align(Alignment.CenterEnd)
-                                .size(width = 100.dp, height = 150.dp)
-                                .graphicsLayer { rotationZ = 3f }
-                                .background(
-                                    Color.DarkGray.copy(alpha = 0.2f),
-                                    RoundedCornerShape(8.dp)
-                                )
-                        )
-
-                        // Анимируем появление карточки
                         AnimatedContent(
-                            targetState = state.currentPlayer,
+                            targetState = state.currentPlayer.name,
                             transitionSpec = {
-                                slideInHorizontally { it / 2 } + fadeIn() with
-                                        slideOutHorizontally { -it / 2 } + fadeOut()
+                                slideInHorizontally { fullWidth -> fullWidth } + fadeIn() with
+                                        slideOutHorizontally { fullWidth -> -fullWidth } + fadeOut()
                             },
-                            label = "CardDealAnimation"
-                        ) {
-                            CardFlipper(
-                                showBack = !state.isCardFlipped,
-                                onClick = { viewModel.flipCard() },
-                                onEndAnimationBackShowed = {
-                                    if (!state.isCardFlipped) viewModel.nextPlayer()
-                                },
-                                front = { FaceCard(currentPlayer = state.currentPlayer!!) },
-                                back = { BackCard() }
+                            label = "PlayerNameTransition"
+                        ) { name ->
+                            Text(
+                                text = "$name, ваша карта",
+                                style = MaterialTheme.typography.headlineSmall,
+                                fontWeight = FontWeight.Bold
                             )
                         }
-                    }
 
-                    Spacer(Modifier.height(16.dp))
 
-                    val description = when (state.currentPlayer?.role) {
-                        RoleType.MAFIA -> "Устраняйте игроков по ночам. Ваша цель — устранить всех мирных."
-                        RoleType.CIVILIAN -> "Выживите и найдите мафию с помощью голосования."
-                        RoleType.DOCTOR -> "Лечите одного игрока каждую ночь."
-                        RoleType.DETECTIVE -> "Проверяйте игроков на принадлежность к мафии."
-                        RoleType.MANIAC -> "Убивайте игроков. Все против вас."
-                        RoleType.SLUT -> "Блокируйте действия других игроков ночью."
-                        else -> "Описание недоступно."
-                    }
-                    AnimatedVisibility(visible = state.isCardFlipped) {
-                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Spacer(Modifier.height(16.dp))
-                            Text(
-                                text = description,
-                                style = MaterialTheme.typography.bodyLarge,
-                                modifier = Modifier.alpha(0.8f)
+                        Spacer(Modifier.height(16.dp))
+                        Box(
+                            Modifier.fillMaxWidth().height(300.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .align(Alignment.CenterEnd)
+                                    .size(width = 100.dp, height = 150.dp)
+                                    .graphicsLayer { rotationZ = 5f }
+                                    .background(
+                                        Color.DarkGray.copy(alpha = 0.2f),
+                                        RoundedCornerShape(8.dp)
+                                    )
+                            )
+                            Box(
+                                modifier = Modifier
+                                    .align(Alignment.CenterEnd)
+                                    .size(width = 100.dp, height = 150.dp)
+                                    .graphicsLayer { rotationZ = -4f }
+                                    .background(
+                                        Color.DarkGray.copy(alpha = 0.2f),
+                                        RoundedCornerShape(8.dp)
+                                    )
+                            )
+                            Box(
+                                modifier = Modifier
+                                    .align(Alignment.CenterEnd)
+                                    .size(width = 100.dp, height = 150.dp)
+                                    .graphicsLayer { rotationZ = 3f }
+                                    .background(
+                                        Color.DarkGray.copy(alpha = 0.2f),
+                                        RoundedCornerShape(8.dp)
+                                    )
                             )
 
-                            Spacer(Modifier.height(16.dp))
+                            // Анимируем появление карточки
+                            AnimatedContent(
+                                targetState = state.currentPlayer,
+                                transitionSpec = {
+                                    slideInHorizontally { it / 2 } + fadeIn() with
+                                            slideOutHorizontally { -it / 2 } + fadeOut()
+                                },
+                                label = "CardDealAnimation"
+                            ) {
+                                CardFlipper(
+                                    showBack = !state.isCardFlipped,
+                                    onClick = { viewModel.flipCard() },
+                                    onEndAnimationBackShowed = {
+                                        if (!state.isCardFlipped) viewModel.nextPlayer()
+                                    },
+                                    front = { FaceCard(currentPlayer = state.currentPlayer) },
+                                    back = { BackCard() }
+                                )
+                            }
+                        }
 
-                            Text(
-                                text = "Передайте следующему игроку",
-                                style = MaterialTheme.typography.bodyMedium,
-                                modifier = Modifier.alpha(0.7f)
-                            )
+                        Spacer(Modifier.height(16.dp))
+
+                        val description = when (state.currentPlayer.role) {
+                            RoleType.MAFIA -> "Устраняйте игроков по ночам. Ваша цель — устранить всех мирных."
+                            RoleType.CIVILIAN -> "Выживите и найдите мафию с помощью голосования."
+                            RoleType.DOCTOR -> "Лечите одного игрока каждую ночь."
+                            RoleType.DETECTIVE -> "Проверяйте игроков на принадлежность к мафии."
+                            RoleType.MANIAC -> "Убивайте игроков. Все против вас."
+                            RoleType.SLUT -> "Блокируйте действия других игроков ночью."
+                            else -> "Описание недоступно."
+                        }
+                        AnimatedVisibility(visible = state.isCardFlipped) {
+                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                Spacer(Modifier.height(16.dp))
+                                Text(
+                                    text = description,
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    modifier = Modifier.alpha(0.8f)
+                                )
+
+                                Spacer(Modifier.height(16.dp))
+
+                                Text(
+                                    text = "Передайте следующему игроку",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    modifier = Modifier.alpha(0.7f)
+                                )
+                            }
                         }
                     }
                 }

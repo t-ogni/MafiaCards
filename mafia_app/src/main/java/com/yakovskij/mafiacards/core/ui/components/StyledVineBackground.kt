@@ -12,15 +12,17 @@ import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.res.imageResource
 import com.yakovskij.mafiacards.R
+import com.yakovskij.mafiacards.core.ui.theme.DarkestBackgroundGradientPoint
+import com.yakovskij.mafiacards.core.ui.theme.LightestBackgroundGradientPoint
 
 @Composable
-fun VineNoizeBackground(modifier: Modifier = Modifier, alphaChannel: Float = 0.03f) {
+fun StyledVineBackground(modifier: Modifier = Modifier, alphaChannel: Float = 0.06f) {
     val noiseBitmap: ImageBitmap = ImageBitmap.imageResource(R.drawable.noize)
     Canvas(modifier = modifier.fillMaxSize().background(
         brush = Brush.verticalGradient(
             colors = listOf(
-                Color(0xFF3B1F1B), // верхний темный бордовый
-                Color(0xFF5A2A24), // нижний более теплый
+                Color(DarkestBackgroundGradientPoint.value), // верхний темный бордовый
+                Color(LightestBackgroundGradientPoint.value), // нижний более теплый
             )
         )
     )) {
@@ -41,9 +43,9 @@ fun VineNoizeBackground(modifier: Modifier = Modifier, alphaChannel: Float = 0.0
         // 2. Виньетка — радиальный градиент от прозрачного центра к тёмным краям
         drawRect(
             brush = Brush.radialGradient(
-                colors = listOf(Color.Transparent, Color(0xCC000000)), // можно усилить/ослабить alpha
+                colors = listOf(Color.Transparent, Color(0xAA000000)), // можно усилить/ослабить alpha
                 center = center,
-                radius = size.minDimension * 0.8f
+                radius = size.minDimension * 0.75f
             ),
             size = size
         )

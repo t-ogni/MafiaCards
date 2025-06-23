@@ -12,9 +12,10 @@ private val MafiaColorScheme = darkColorScheme(
     background = DeepBlack,      // Почти черный фон
     onBackground = LightTextColor,
     surface = SurfaceBlue,         // Глубокий тёмно-синий
-    onSurface = MafiaWhite,
+    onSurface = DarkRed,
     secondary = GoldAccent,       // Акцент — золотистый
-    onSecondary = Color.Black
+    onSecondary = Color.Black,
+
 )
 
 @Composable

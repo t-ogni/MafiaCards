@@ -21,7 +21,7 @@ import androidx.compose.ui.unit.dp
 import coil.ImageLoader
 import coil.decode.SvgDecoder
 import coil.request.ImageRequest
-import com.yakovskij.mafiacards.core.ui.components.VineNoizeBackground
+import com.yakovskij.mafiacards.core.ui.components.StyledVineBackground
 import com.yakovskij.mafiacards.core.ui.theme.LightTextColor
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -67,7 +67,7 @@ fun LoadingScreen(onLoaded: () -> Unit = {}) {
     }
 
     if (!isLoaded) {
-        VineNoizeBackground()
+        StyledVineBackground()
         Column(
             modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,

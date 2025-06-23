@@ -20,9 +20,8 @@ import androidx.compose.ui.unit.dp
 
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import com.yakovskij.mafiacards.core.ui.components.MenuLittleButton
-import com.yakovskij.mafiacards.core.ui.components.MenuMediumButton
-import com.yakovskij.mafiacards.core.ui.components.VineNoizeBackground
+import com.yakovskij.mafiacards.core.ui.components.StyledButton
+import com.yakovskij.mafiacards.core.ui.components.StyledVineBackground
 import com.yakovskij.mafiacards.core.ui.theme.LightTextColor
 
 @Composable
@@ -32,7 +31,7 @@ fun MainMenuScreen(
     onHowToPlay: () -> Unit = {},
     onStats: () -> Unit = {}) {
 
-    VineNoizeBackground()
+    StyledVineBackground()
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -58,12 +57,12 @@ fun MainMenuScreen(
                 modifier = Modifier
                     .fillMaxWidth()
             ) {
-                MenuMediumButton("Создать комнату", onClick = onCreateGame)
+                StyledButton("Создать комнату", textSize = 22, onClick = onCreateGame)
                 Box(modifier = Modifier.fillMaxWidth(0.9f)) {
-                    MenuMediumButton("Присоединиться", onClick = onJoinGame)
+                    StyledButton("Присоединиться", textSize = 18, onClick = onJoinGame)
                 }
                 Box(modifier = Modifier.fillMaxWidth(0.7f)) {
-                    MenuLittleButton("Как играть?", onClick = onHowToPlay)
+                    StyledButton("Как играть?", textSize = 16, onClick = onHowToPlay)
                 }
             }
 
@@ -91,7 +90,7 @@ fun MainMenuScreen(
                     .padding(bottom = 24.dp)
             ) {
                 Box(modifier = Modifier.fillMaxWidth(0.9f)) {
-                    MenuMediumButton("Моя статистика", onClick = onStats)
+                    StyledButton("Моя статистика", onClick = onStats)
                 }
             }
         }

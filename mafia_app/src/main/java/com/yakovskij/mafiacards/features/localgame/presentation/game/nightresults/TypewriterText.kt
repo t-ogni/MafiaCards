@@ -1,4 +1,4 @@
-package com.yakovskij.mafiacards.features.localgame.presentation.game.discussion
+package com.yakovskij.mafiacards.features.localgame.presentation.game.nightresults
 
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text

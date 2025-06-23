@@ -54,26 +54,12 @@ class SetupGameViewModel @Inject constructor(
         return settingsRepository.getGameSettings() to settingsRepository.getTimerSettings()
     }
     fun startGame() {
-        if(settingsRepository.getTotalActiveRolesCount() < settingsRepository.getGameSettings().totalPlayers) {
+        if(settingsRepository.getTotalActiveRolesCount() > settingsRepository.getGameSettings().totalPlayers) {
             settingsRepository.updateTotalPlayers(settingsRepository.getTotalActiveRolesCount())
         }
 
         gameRepository.saveSettings(settingsRepository.getGameSettings())
-        val mockPlayers = listOf<Player>(
-            Player(1, "Мышь"),
-            Player(2, "Кот"),
-            Player(3, "Крыса"),
-            Player(4, "Леопард"),
-            Player(5, "Акула"),
-            Player(6, "Зебра"),
-            Player(7, "Жираф"),
-            Player(8, "Спутник"),
-            Player(9, "Санки"),
-            Player(10, "Пиранья"),
-            Player(11, "Щука"),
-            Player(12, "Собака"),
-        ).take(settingsRepository.getGameSettings().totalPlayers)
-        gameRepository.startGame(players = mockPlayers)
+        gameRepository.startGame(settingsRepository.players.value)
     }
 
 }

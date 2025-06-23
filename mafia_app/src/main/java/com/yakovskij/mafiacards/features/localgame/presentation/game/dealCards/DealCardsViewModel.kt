@@ -57,7 +57,7 @@ class DealCardsViewModel @Inject constructor(
     }
 
     fun proceedToNight() {
-        gameRepository.engine?.advancePhase()
+        gameRepository.getEngine().advancePhase()
         // Тут можно навигацию или обновление состояния вызывать
     }
 }

@@ -16,7 +16,7 @@ class GameViewModel @Inject constructor(
     private val gameRepository: GameRepository
 ) : ViewModel() {
 
-    private var engine: GameEngine = gameRepository.engine!!
+    private var engine: GameEngine = gameRepository.getEngine()
 
     private val _uiState = mutableStateOf(GameUiState())
     val uiState: State<GameUiState> = _uiState

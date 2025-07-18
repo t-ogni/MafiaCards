@@ -1,21 +1,21 @@
 package com.yakovskij.mafiacards.core.ui.components
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.yakovskij.mafiacards.core.ui.theme.AccentBorderColor
 import com.yakovskij.mafiacards.core.ui.theme.AccentColor
+import com.yakovskij.mafiacards.core.ui.theme.MafiaCardsTheme
 
 @Composable
 fun StyledCard(
@@ -29,6 +29,25 @@ fun StyledCard(
         colors = CardDefaults.cardColors(containerColor = AccentColor),
         elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
     ) {
-        Column (modifier = Modifier.padding(16.dp), content = content)
+        Column (modifier = Modifier.padding(8.dp), content = content)
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun PreviewStyledCard() {
+    MafiaCardsTheme {
+        Column(
+            modifier = Modifier
+                .padding(16.dp)
+                .fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            StyledCard {
+                StyledButton(text = "Средний", height = 60.dp, textSize = 16)
+                StyledButton(text = "Маленький", height = 48.dp, textSize = 14)
+                StyledButton(text = "Disabled", enabled = false)
+            }
+        }
     }
 }

@@ -40,6 +40,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.yakovskij.mafiacards.core.ui.components.StyledVineBackground
 import kotlin.collections.forEachIndexed
 
 @Composable
@@ -48,6 +49,8 @@ fun PlayerSetupScreen(
     onBack: () -> Unit
 ) {
     val players by viewModel.players
+
+    StyledVineBackground()
 
     Scaffold { innerPadding ->
         Box(

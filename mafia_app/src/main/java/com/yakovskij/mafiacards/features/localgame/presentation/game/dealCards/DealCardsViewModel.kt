@@ -18,7 +18,7 @@ class DealCardsViewModel @Inject constructor(
     private val _uiState = mutableStateOf(DealCardsUiState())
     val uiState: State<DealCardsUiState> = _uiState
 
-    private val players: List<Player> = gameRepository.getState()?.players ?: emptyList()
+    private val players: List<Player> = gameRepository.getState().players
 
     init {
         _uiState.value = DealCardsUiState(
@@ -30,26 +30,23 @@ class DealCardsViewModel @Inject constructor(
 
     fun nextPlayer() {
         val state = _uiState.value
-        when {
-            state.currentIndex < players.lastIndex -> {
-                // Следующий игрок
-                val nextIndex = state.currentIndex + 1
-                _uiState.value = state.copy(
-                    currentIndex = nextIndex,
-                    currentPlayer = players[nextIndex],
-                    isCardFlipped = false
-                )
-            }
-
-            else -> {
-                // Все игроки посмотрели карты
-                _uiState.value = state.copy(
-                    isCardFlipped = true,
-                    allCardsDealt = true
-                )
-            }
+        if (state.currentIndex < players.lastIndex) {
+            // Следующий игрок
+            val nextIndex = state.currentIndex + 1
+            _uiState.value = state.copy(
+                currentIndex = nextIndex,
+                currentPlayer = players[nextIndex],
+                isCardFlipped = false
+            )
+        } else {
+            // Все игроки посмотрели карты
+            _uiState.value = state.copy(
+                isCardFlipped = true,
+                allCardsDealt = true
+            )
         }
     }
+
 
     fun flipCard() {
         val state = _uiState.value

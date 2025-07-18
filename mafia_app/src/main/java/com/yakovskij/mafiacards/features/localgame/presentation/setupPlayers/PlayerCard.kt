@@ -27,6 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.yakovskij.mafiacards.core.ui.components.StyledCard
 
 
 @Composable
@@ -55,11 +56,10 @@ fun PlayerCard(
     }
 
 
-    Card(
+    StyledCard(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { isEditing = true },
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+            .clickable { isEditing = true }
     ) {
         Row(
             modifier = Modifier

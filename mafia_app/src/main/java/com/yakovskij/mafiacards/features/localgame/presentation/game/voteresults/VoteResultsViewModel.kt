@@ -1,4 +1,4 @@
-package com.yakovskij.mafiacards.features.localgame.presentation.game.nightresults
+package com.yakovskij.mafiacards.features.localgame.presentation.game.voteresults
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
@@ -6,7 +6,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yakovskij.mafiacards.features.localgame.data.GameRepository
 import com.yakovskij.mafiacards.features.localgame.data.GameSettingsRepository
-import com.yakovskij.mafiacards.features.localgame.presentation.game.nightresults.formatter.NightEventFormatter
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.coroutines.Job
@@ -14,17 +13,16 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @HiltViewModel
-open class NightResultsViewModel @Inject constructor(
+open class VoteResultsViewModel @Inject constructor(
     private val gameRepository: GameRepository,
     private val settingsRepository: GameSettingsRepository
 ) : ViewModel() {
 
-    private val _uiState = mutableStateOf(NightResultsUiState())
-    open val uiState: State<NightResultsUiState> = _uiState
+    private val _uiState = mutableStateOf(VoteResultsUiState())
+    open val uiState: State<VoteResultsUiState> = _uiState
 
     private var timerJob: Job? = null
 
-    private val formatter = NightEventFormatter()
 
     open fun startDiscussion(){
         initDiscussionState()
@@ -36,15 +34,14 @@ open class NightResultsViewModel @Inject constructor(
         val dayTime = settingsRepository.getTimerSettings().dayTime
         val results = gameRepository.getEngine().getNightResults()
 
-        _uiState.value = NightResultsUiState(
-            nightResults = formatter.format(results),
+        _uiState.value = VoteResultsUiState(
             dayTimeSeconds = dayTime,
             dayTimeSecondsLeft = dayTime
         )
     }
 
     open fun resetDiscussionState() {
-        _uiState.value = NightResultsUiState()
+        _uiState.value = VoteResultsUiState()
     }
 
     private fun startTimer() {

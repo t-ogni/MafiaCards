@@ -33,6 +33,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.yakovskij.mafia_engine.domain.RoleType
+import com.yakovskij.mafiacards.R
+import com.yakovskij.mafiacards.features.localgame.presentation.setupDeck.component.RoleCard
 
 @Composable
 fun DeckScreen(
@@ -58,7 +60,6 @@ fun DeckScreen(
                     mafiaCount = uiState.mafiaCount,
                     doctorCount = uiState.doctorCount,
                     detectiveCount = uiState.detectiveCount,
-                    errorMessage = uiState.errorMessage,
                     isValueCorrect = uiState.isValueCorrect,
                     onRoleChange = viewModel::onRoleCountChange,
                     onBack = onBack
@@ -83,7 +84,6 @@ fun DeckScreenContent(
     mafiaCount: Int,
     doctorCount: Int,
     detectiveCount: Int,
-    errorMessage: String?,
     isValueCorrect: Boolean,
     onRoleChange: (RoleType, Int) -> Unit,
     onBack: () -> Unit
@@ -105,10 +105,17 @@ fun DeckScreenContent(
         Text("Колода", fontSize = 24.sp, fontWeight = FontWeight.Bold)
         Spacer(Modifier.height(16.dp))
 
-        RoleCard("Мирный", civilians, isLocked = true)
+        RoleCard("Мирный", civilians, isLocked = true, imageRes = R.drawable.civfemale)
 
         roles.forEach { (role, count) ->
-            RoleCard(role.title, count, isLocked = false) {
+            val imageRes = when (role) {
+                RoleType.MAFIA -> R.drawable.mafia
+                RoleType.DOCTOR -> R.drawable.doctor
+                RoleType.DETECTIVE -> R.drawable.detective
+                else -> R.drawable.civmale
+            }
+
+            RoleCard(role.title, count, isLocked = false, imageRes = imageRes) {
                 onRoleChange(role, it)
             }
         }
@@ -126,50 +133,6 @@ fun DeckScreenContent(
 
         Button(onClick = onBack, modifier = Modifier.fillMaxWidth(), enabled = isValueCorrect) {
             Text("Назад")
-        }
-    }
-}
-
-
-
-@Composable
-fun RoleCard(
-    name: String,
-    count: Int,
-    isLocked: Boolean,
-    onCountChange: ((Int) -> Unit)? = null
-) {
-    Card(
-        colors = CardDefaults.cardColors(
-            containerColor = if (count == 0) Color.LightGray.copy(alpha = 0.3f) else Color.White
-        ),
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 4.dp)
-    ) {
-        Row(
-            modifier = Modifier
-                .padding(12.dp)
-                .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Text(name, fontSize = 18.sp)
-
-
-            if (isLocked) {
-                Text("$count", fontWeight = FontWeight.Bold)
-            } else {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    IconButton(onClick = { onCountChange?.invoke(count - 1) }, enabled = count > 0) {
-                        Text("-")
-                    }
-                    Text("$count", modifier = Modifier.width(24.dp), textAlign = TextAlign.Center)
-                    IconButton(onClick = { onCountChange?.invoke(count + 1) }) {
-                        Text("+")
-                    }
-                }
-            }
         }
     }
 }

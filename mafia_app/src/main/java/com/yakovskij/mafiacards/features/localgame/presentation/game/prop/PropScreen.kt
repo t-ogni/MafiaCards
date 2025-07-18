@@ -19,12 +19,10 @@ fun PropScreen(
     viewModel: GameViewModel = hiltViewModel(),
     onAction: () -> Unit
 ) {
-
     val uiState by viewModel.uiState
 
     Column (modifier = Modifier.systemBarsPadding().padding(12.dp)){
         Text("Текущая фаза: ${uiState.phase.name}")
         Button(onClick = onAction) { Text("Следуюшая фаза") }
     }
-
 }

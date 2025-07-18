@@ -10,30 +10,66 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 
 @HiltViewModel
-class VotingViewModel @Inject constructor(
+open class VotingViewModel @Inject constructor(
     private val gameRepository: GameRepository,
     private val settingsRepository: GameSettingsRepository
 ) : ViewModel() {
 
     private val _uiState = mutableStateOf(VotingUiState())
-    val uiState: State<VotingUiState> = _uiState
+    open val uiState: State<VotingUiState> = _uiState
+
+    private lateinit var players: List<Player>
+    private lateinit var alive: List<Player>
 
     init {
        initState()
     }
 
-    fun initState() {
+    open fun initState() {
         if (!_uiState.value.shouldInit) return
-        val players = gameRepository.getState().players
-        val alive = players.filter { it.isAlive }
+        players = gameRepository.getState().players
+        alive = players.filter { it.isAlive == true }
 
         _uiState.value = _uiState.value.copy(
-            votingCandidates = alive
+            votingCandidates = alive,
+            currentPlayer = alive.first(),
+            currentIndex = 0
         )
     }
 
-    fun addVote(performer: Player, target: Player){
+    open fun addVote(performer: Player, target: Player){
         gameRepository.getEngine().user(performer.id).voted(target.id)
+    }
+
+    fun selectPlayerToVote(target: Player){
+        _uiState.value = _uiState.value.copy(selectedToVotePlayer = target)
+    }
+
+    fun nextPlayerOrFinish(){
+        val state = _uiState.value
+        if (state.currentIndex < alive.lastIndex) {
+            // Следующий игрок
+            val nextIndex = state.currentIndex + 1
+            _uiState.value = state.copy(
+                currentIndex = nextIndex,
+                currentPlayer = alive[nextIndex],
+                selectedToVotePlayer = null
+            )
+        } else {
+            // Все игроки посмотрели карты
+            _uiState.value = state.copy(
+                isVotingFinished = true
+            )
+        }
+    }
+
+    fun confirmVote() {
+        addVote(_uiState.value.currentPlayer, _uiState.value.selectedToVotePlayer!!)
+        nextPlayerOrFinish()
+    }
+
+    fun skipVote(){
+        nextPlayerOrFinish()
     }
 }
 

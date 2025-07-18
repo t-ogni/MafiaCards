@@ -14,6 +14,16 @@ val MafiaTypography = Typography(
         fontWeight = FontWeight.ExtraBold,
         fontSize = 72.sp
     ),
+    displayMedium = TextStyle(
+        fontFamily = FontFamily(Font(R.font.cinzel_bold)),
+        fontWeight = FontWeight.Bold,
+        fontSize = 56.sp
+    ),
+    displaySmall = TextStyle(
+        fontFamily = FontFamily(Font(R.font.cinzel_bold)),
+        fontWeight = FontWeight.Medium,
+        fontSize = 40.sp
+    ),
     titleMedium = TextStyle(
         fontFamily = FontFamily(Font(R.font.roboto_slab_bold)),
         fontWeight = FontWeight.Bold,

@@ -1,28 +1,14 @@
 package com.yakovskij.mafiacards.features.localgame.presentation.game.voting
 
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.systemBarsPadding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import android.content.res.Configuration
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
+import androidx.compose.runtime.remember
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.yakovskij.mafiacards.core.ui.components.StyledButton
-import com.yakovskij.mafiacards.core.ui.components.StyledCard
-import com.yakovskij.mafiacards.core.ui.components.StyledLazyColumn
-import com.yakovskij.mafiacards.core.ui.components.StyledVineBackground
-import com.yakovskij.mafiacards.core.ui.theme.LightTextColor
-import com.yakovskij.mafiacards.features.localgame.presentation.game.nightresults.NightResultsViewModel
+import com.yakovskij.mafiacards.core.ui.theme.MafiaCardsTheme
+
 
 @Composable
 fun VotingScreen(
@@ -30,43 +16,40 @@ fun VotingScreen(
     onNextPhase: () -> Unit
 ) {
     val uiState by viewModel.uiState
-
-    LaunchedEffect(uiState.shouldInit) {
-        if (uiState.shouldInit) {
-            viewModel.initState()
-        }
+    if(uiState.isVotingFinished){
+        VotingEndedScreen(viewModel, onNextPhase)
+    } else {
+        PlayerVotingScreen(viewModel)
     }
+}
 
-    StyledVineBackground()
 
-    Column (modifier = Modifier.systemBarsPadding()) {
-        Text(
-            text = "Голосование",
-            style = MaterialTheme.typography.displayLarge,
-            color = LightTextColor,
-            modifier = Modifier.padding(top = 24.dp, bottom = 12.dp)
+@Preview(
+    name = "Small phone",
+    device = "spec:width=780px,height=2000px,dpi=340",
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_NO
+)
+@Preview(
+    name = "Medium Phone",
+    device = "spec:width=1080px,height=2340px,dpi=440",
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_YES
+)
+@Preview(
+    name = "Tablet",
+    device = "spec:width=1280px,height=800px,dpi=240",
+    showBackground = true,
+    fontScale = 1.2f
+)
+
+@Composable
+fun VotingScreenPreview_MultiDevice() {
+    val fakeViewModel = remember { FakeVotingViewModel() }
+
+    MafiaCardsTheme {
+        PlayerVotingScreen(
+            viewModel = fakeViewModel
         )
-        
-        StyledLazyColumn(spacing = 4.dp) {
-            items(uiState.votingCandidates) { candidat ->
-                StyledCard(
-                    modifier = Modifier.clickable(
-                        onClick = { viewModel.addVote(uiState.currentPlayer, candidat) }
-                    )) {
-                    Text(
-                        text = candidat.name,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp),
-                        color = LightTextColor
-                    )
-                }
-            }
-        }
-        if(uiState.selectedToVotePlayer != null)
-            StyledButton("Подтвердить голос", onClick = onNextPhase)
-        else
-            StyledButton("Пропустить", onClick = onNextPhase)
-
     }
 }

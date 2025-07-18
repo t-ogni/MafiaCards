@@ -9,7 +9,7 @@ import com.yakovskij.mafia_engine.domain.*
 //  реализует сложную логику, вроде «мафия голосует за убийство», «док лечит», «детектив проверяет»
 //
 
-class GameEngine(
+open class GameEngine(
     private var session: GameSession,
     private val voteProcessor: VoteProcessor = VoteProcessor(session),
     private val nightProcessor: NightProcessor = NightProcessor(session)

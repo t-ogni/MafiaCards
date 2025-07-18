@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import com.yakovskij.mafiacards.core.ui.components.StyledButton
+import com.yakovskij.mafiacards.core.ui.components.StyledHeadlineLarge
 import com.yakovskij.mafiacards.core.ui.components.StyledVineBackground
 import com.yakovskij.mafiacards.core.ui.theme.LightTextColor
 
@@ -44,11 +45,9 @@ fun MainMenuScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.fillMaxSize()
         ) {
-            Text(
+            StyledHeadlineLarge(
                 text = "MAFIA",
-                style = MaterialTheme.typography.displayLarge,
-                color = LightTextColor,
-                modifier = Modifier.padding(top = 24.dp, bottom = 12.dp)
+                modifier = Modifier.padding(top = 12.dp)
             )
 
             Column(
@@ -57,13 +56,9 @@ fun MainMenuScreen(
                 modifier = Modifier
                     .fillMaxWidth()
             ) {
-                StyledButton("Создать комнату", textSize = 22, onClick = onCreateGame)
-                Box(modifier = Modifier.fillMaxWidth(0.9f)) {
-                    StyledButton("Присоединиться", textSize = 18, onClick = onJoinGame)
-                }
-                Box(modifier = Modifier.fillMaxWidth(0.7f)) {
-                    StyledButton("Как играть?", textSize = 16, onClick = onHowToPlay)
-                }
+                StyledButton("Создать комнату", textSize = 22, onClick = onCreateGame, modifier = Modifier.fillMaxWidth())
+                StyledButton("Присоединиться", textSize = 18, onClick = onJoinGame, modifier = Modifier.fillMaxWidth(0.9f))
+                StyledButton("Как играть?", textSize = 16, onClick = onHowToPlay, modifier = Modifier.fillMaxWidth(0.7f))
             }
 
 
@@ -89,9 +84,7 @@ fun MainMenuScreen(
                     .fillMaxWidth()
                     .padding(bottom = 24.dp)
             ) {
-                Box(modifier = Modifier.fillMaxWidth(0.9f)) {
-                    StyledButton("Моя статистика", onClick = onStats)
-                }
+               StyledButton("Моя статистика", onClick = onStats, modifier = Modifier.fillMaxWidth(0.9f))
             }
         }
     }

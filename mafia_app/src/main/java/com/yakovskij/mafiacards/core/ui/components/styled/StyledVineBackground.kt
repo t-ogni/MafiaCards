@@ -1,7 +1,6 @@
 package com.yakovskij.mafiacards.core.ui.components
 
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -11,21 +10,16 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.res.imageResource
+import androidx.compose.ui.tooling.preview.Preview
 import com.yakovskij.mafiacards.R
 import com.yakovskij.mafiacards.core.ui.theme.DarkestBackgroundGradientPoint
 import com.yakovskij.mafiacards.core.ui.theme.LightestBackgroundGradientPoint
+import com.yakovskij.mafiacards.core.ui.theme.MafiaCardsTheme
 
 @Composable
 fun StyledVineBackground(modifier: Modifier = Modifier, alphaChannel: Float = 0.06f) {
     val noiseBitmap: ImageBitmap = ImageBitmap.imageResource(R.drawable.noize)
-    Canvas(modifier = modifier.fillMaxSize().background(
-        brush = Brush.verticalGradient(
-            colors = listOf(
-                Color(DarkestBackgroundGradientPoint.value), // верхний темный бордовый
-                Color(LightestBackgroundGradientPoint.value), // нижний более теплый
-            )
-        )
-    )) {
+    Canvas(modifier = modifier.fillMaxSize()) {
         val paint = android.graphics.Paint().apply {
             isAntiAlias = true
             alpha = (255 * alphaChannel).toInt()
@@ -36,18 +30,28 @@ fun StyledVineBackground(modifier: Modifier = Modifier, alphaChannel: Float = 0.
             )
         }
 
-        drawContext.canvas.nativeCanvas.drawRect(
-            0f, 0f, size.width, size.height, paint
-        )
-
-        // 2. Виньетка — радиальный градиент от прозрачного центра к тёмным краям
         drawRect(
             brush = Brush.radialGradient(
-                colors = listOf(Color.Transparent, Color(0xAA000000)), // можно усилить/ослабить alpha
+                colors = listOf(
+                    Color(LightestBackgroundGradientPoint.value),
+                    Color(DarkestBackgroundGradientPoint.value),
+                ),
                 center = center,
-                radius = size.minDimension * 0.75f
+                radius = size.minDimension
             ),
             size = size
         )
+        drawContext.canvas.nativeCanvas.drawRect(
+            0f, 0f, size.width, size.height, paint
+        )
+    }
+}
+
+
+@Preview(showBackground = true, heightDp = 700)
+@Composable
+fun PreviewStyledVineBackground() {
+    MafiaCardsTheme {
+        StyledVineBackground()
     }
 }

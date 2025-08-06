@@ -2,7 +2,6 @@ package com.yakovskij.mafiacards.features.localgame.presentation.game.voting
 
 import com.yakovskij.mafia_engine.domain.Player
 
-
 data class VotingUiState(
     val shouldInit: Boolean = true,
     val currentIndex: Int = 0,

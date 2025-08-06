@@ -63,7 +63,12 @@ fun AppNavGraph(navController: NavHostController, startDestination: String = Scr
             })
         }
         composable(Screen.LocalGameScreen.route) {
-            GameScreen()
+            GameScreen(
+                onExitConfirmed = {
+                    navController.popBackStack(Screen.LocalGameSetup.route, false)
+                }
+            )
         }
+
     }
 }

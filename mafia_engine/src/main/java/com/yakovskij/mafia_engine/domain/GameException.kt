@@ -5,7 +5,7 @@ sealed class GameException(message: String) : Exception(message) {
     class PlayerCountMismatch(
         expected: Int,
         actual: Int
-    ) : GameException("Количество игроков ($actual) не соответствует необходимому числу ($expected) для выбранных настроек.")
+    ) : GameException("Количество игроков ($actual) не соответствует ожидаемому числу игроков ($expected) для выбранных настроек.")
 
     class InsufficientRoles(
         required: Int,

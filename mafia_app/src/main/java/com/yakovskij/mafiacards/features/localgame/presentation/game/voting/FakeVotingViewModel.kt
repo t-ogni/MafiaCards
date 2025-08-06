@@ -8,12 +8,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.yakovskij.mafia_engine.domain.*
 import com.yakovskij.mafia_engine.*
 import com.yakovskij.mafiacards.features.localgame.data.GameRepository
-import com.yakovskij.mafiacards.features.localgame.data.GameSettingsRepository
+import com.yakovskij.mafiacards.features.localgame.data.gamesettings.FakeGameSettingsRepository
+import com.yakovskij.mafiacards.features.localgame.data.gamesettings.GameSettingsRepository
 
 
 class FakeVotingViewModel : VotingViewModel(
     gameRepository = GameRepository(),
-    settingsRepository = GameSettingsRepository()
+    settingsRepository = FakeGameSettingsRepository()
 ) {
     private val _fakeUiState = mutableStateOf(
         VotingUiState(

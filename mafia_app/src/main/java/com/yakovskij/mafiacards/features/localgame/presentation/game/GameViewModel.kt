@@ -6,7 +6,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.ViewModel
 import com.yakovskij.mafia_engine.*
 import com.yakovskij.mafiacards.features.localgame.data.GameRepository
-import com.yakovskij.mafiacards.features.localgame.data.GameSettingsRepository
+import com.yakovskij.mafiacards.features.localgame.data.gamesettings.GameSettingsRepository
 import com.yakovskij.mafiacards.features.localgame.presentation.game.night.NightActionsViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
@@ -29,6 +29,10 @@ class GameViewModel @Inject constructor(
             phase = newPhase,
             hasProceededToNextPhase = false
         )
+    }
+
+    fun resetGame() {
+        gameRepository.reset()
     }
 
     fun markPhaseAsCompleted() {

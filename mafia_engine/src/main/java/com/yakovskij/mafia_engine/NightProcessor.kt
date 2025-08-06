@@ -22,23 +22,22 @@ class NightProcessor(private var session: GameSession) {
     }
 
     fun getActions(): List<NightAction> = actions.toList()
-    fun getLastNightEvents(): List<NightEvent> = events.toList()
+    fun getEvents(): List<NightEvent> = events.toList()
 
     fun clearUserActions(performerId: Int): Boolean = actions.removeAll { it.performer.id == performerId }
 
     fun clearActions() {
         actions.clear()
     }
-
     fun clearEvents() {
         events.clear()
     }
+
     fun setSession(newSession: GameSession) {
         session = newSession
     }
 
     fun performNightActions(): List<NightEvent> {
-        clearEvents()
         val players = session.state.players
 
         val blockActions = actions.filter { it.performer.role == RoleType.SLUT }
@@ -60,6 +59,7 @@ class NightProcessor(private var session: GameSession) {
 
             events += NightEvent.KillAttempt(
                 performers = performers,
+                RoleType.MAFIA,
                 target = mafiaTarget,
                 wasSaved = wasSaved
             )
@@ -74,11 +74,10 @@ class NightProcessor(private var session: GameSession) {
                 val performer = players.firstOrNull { it.id == doctorAction.performer.id }
                 val target = players.firstOrNull { it.id == doctorAction.target.id }
                 if (performer != null && target != null) {
-                    events += NightEvent.Saved(performer, target)
+                    events += NightEvent.DoctorSaved(performer, target)
                 }
             }
         }
-
 
         if (maniacAction != null) {
             val performer = players.firstOrNull { it.id == maniacAction.performer.id }
@@ -98,50 +97,11 @@ class NightProcessor(private var session: GameSession) {
             val blocker = players.firstOrNull { it.id == action.performer.id }
             val blocked = players.firstOrNull { it.id == action.target.id }
             if (blocker != null && blocked != null) {
-                events += NightEvent.Blocked(blocker, blocked)
+                events += NightEvent.SlutBlocked(blocker, blocked)
             }
         }
 
         clearActions()
         return events
-    }
-
-    fun formatNightEvent(event: NightEvent): String {
-        return when (event) {
-            is NightEvent.KillAttempt -> {
-                val killers = event.performers.joinToString(", ") { it.role?.title ?: it.name }
-                if (event.wasSaved)
-                    "$killers попытались убить ${event.target.name}, но его спасли."
-                else
-                    "$killers убили ${event.target.name}."
-            }
-
-            is NightEvent.Saved -> {
-                "${event.performer.role?.title ?: event.performer.name} спас ${event.target.name}."
-            }
-
-            is NightEvent.FailedAction -> {
-                "${event.performer.role?.title ?: event.performer.name} пытался воздействовать на ${event.target.name}, но это не сработало."
-            }
-
-            is NightEvent.Blocked -> {
-//                val performerSex = when(event.blocker.role?.gender) {
-//                    Gender.MALE -> "провёл"
-//                    Gender.FEMALE -> "провела"
-//                    Gender.NEUTRAL -> "провело"
-//                }
-
-                "${event.blocker.role?.title} провёл(а) ночь с ${event.blocked.name}, и тот(та) не смог(ла) действовать."
-            }
-
-            is NightEvent.ManiacKill -> {
-                if (event.wasBlocked)
-                    "Маньяк пытался убить ${event.target.name}, но его отвлекли."
-                else
-                    "Маньяк убил ${event.target.name}."
-            }
-
-            is NightEvent.Custom -> event.description
-        }
     }
 }

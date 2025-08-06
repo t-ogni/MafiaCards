@@ -10,9 +10,9 @@ import com.yakovskij.mafia_engine.domain.*
 //
 
 open class GameEngine(
-    private var session: GameSession,
-    private val voteProcessor: VoteProcessor = VoteProcessor(session),
-    private val nightProcessor: NightProcessor = NightProcessor(session)
+    internal var session: GameSession,
+    internal val voteProcessor: VoteProcessor = VoteProcessor(session),
+    internal val nightProcessor: NightProcessor = NightProcessor(session)
 ) {
     fun getSession(): GameSession {
         return session
@@ -27,6 +27,9 @@ open class GameEngine(
         return PlayerController(id, this)
     }
 
+    fun user(player: Player): PlayerController {
+        return PlayerController(player.id, this)
+    }
     fun calculateVotesAndJail(): Int? = voteProcessor.calculateVotesAndJail()
     fun performNightActions() = nightProcessor.performNightActions()
 
@@ -50,16 +53,21 @@ open class GameEngine(
         session.setWinner(winner)
     }
 
-    fun advancePhase() {
+    fun getNextPhase(): GamePhase {
         val nextPhase = when (session.state.currentPhase) {
-            GamePhase.SETUP -> GamePhase.NIGHT
-            GamePhase.NIGHT -> GamePhase.DAY_DISCUSSION
+            GamePhase.SETUP -> GamePhase.DAY_WITHOUT_VOTING
+            GamePhase.DAY_WITHOUT_VOTING -> GamePhase.NIGHT
+            GamePhase.NIGHT -> GamePhase.NIGHT_ENDED
+            GamePhase.NIGHT_ENDED -> GamePhase.DAY_DISCUSSION
             GamePhase.DAY_DISCUSSION -> GamePhase.VOTING
-            GamePhase.VOTING -> GamePhase.VOTED
-            GamePhase.VOTED -> GamePhase.NIGHT
+            GamePhase.VOTING -> GamePhase.VOTING_ENDED
+            GamePhase.VOTING_ENDED -> GamePhase.NIGHT
             GamePhase.END -> GamePhase.END
         }
-
+        return nextPhase
+    }
+    fun advancePhase() {
+        val nextPhase = getNextPhase()
         session.setPhase(nextPhase)
         onPhaseChange(nextPhase)
     }
@@ -67,38 +75,18 @@ open class GameEngine(
     private fun onPhaseChange(phase: GamePhase) {
         when (phase) {
             GamePhase.NIGHT -> {
-                voteProcessor.reset()          // очищаем голоса
+                nightProcessor.clearEvents()
                 nightProcessor.clearActions()  // начинаем ночь
             }
-            GamePhase.DAY_DISCUSSION -> {
-                nightProcessor.clearActions()
-            }
             GamePhase.VOTING -> {
-                voteProcessor.reset()
+                voteProcessor.clearVotes()
             }
-            else -> {} // setup, end — ничего не делаем
-        }
 
-        // Можно добавить лог:
-        // gameLog.add(PhaseChangedEvent(phase))
+            else -> {}
+        }
+        checkWinCondition()
     }
 
-    fun getNightResults(): List<NightEvent> = nightProcessor.getLastNightEvents()
-
-
-    inner class PlayerController(private val performerId: Int, private val engine: GameEngine) {
-        fun voted(targetId: Int?): PlayerController {
-            if (targetId != null) {
-                engine.voteProcessor.addVote(performerId, targetId)
-            }
-            return this
-        }
-
-        fun targets(targetId: Int?): PlayerController {
-            if (targetId != null) {
-                engine.nightProcessor.addAction(performerId, targetId)
-            }
-            return this
-        }
-    }
+    fun getNightResults(): List<NightEvent> = nightProcessor.getEvents()
+    fun getVoteResults(): VoteResult? = voteProcessor.getVoteResult()
 }

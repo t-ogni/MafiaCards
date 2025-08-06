@@ -19,9 +19,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.yakovskij.mafiacards.core.ui.theme.AccentBorderColor
 import com.yakovskij.mafiacards.core.ui.theme.AccentColor
 import com.yakovskij.mafiacards.core.ui.theme.LightTextColor
@@ -29,60 +31,51 @@ import com.yakovskij.mafiacards.core.ui.theme.MafiaCardsTheme
 
 @Composable
 fun StyledIconButton(
-    icon: ImageVector,
     onClick: () -> Unit,
-    contentDescription: String? = null,
     modifier: Modifier = Modifier,
     size: Dp = 56.dp,
     buttonColor: Color = LightTextColor,
-    iconColor: Color = AccentColor,
+    borderColor: Color = AccentBorderColor,
+    content: @Composable BoxScope.() -> Unit
 ) {
-
     Box(
         modifier = modifier
             .size(size)
             .clip(CircleShape)
             .background(buttonColor)
-            .border(BorderStroke(4.dp, AccentBorderColor), CircleShape)
+            .border(BorderStroke(4.dp, borderColor), CircleShape)
             .clickable(onClick = onClick),
-        contentAlignment = Alignment.Center
-    ) {
-        Icon(
-            imageVector = icon,
-            contentDescription = contentDescription,
-            tint = iconColor,
-
-            modifier = Modifier.size(size / 1.6f)
-
-        )
-    }
+        contentAlignment = Alignment.Center,
+        content = content
+    )
 }
+
 
 @Preview(showBackground = true)
 @Composable
 fun PreviewStyledIconButton() {
     MafiaCardsTheme {
-        Row (Modifier.fillMaxWidth().padding(20.dp), horizontalArrangement = Arrangement.SpaceAround){
-            StyledIconButton(
-                icon = Icons.Default.Add,
-                contentDescription = "Добавить",
-                onClick = {}
-            )
-            StyledIconButton(
-                icon = Icons.Default.Delete,
-                contentDescription = "Добавить",
-                onClick = {}
-            )
-            StyledIconButton(
-                icon = Icons.Default.Edit,
-                contentDescription = "Добавить",
-                onClick = {}
-            )
-            StyledIconButton(
-                icon = Icons.Default.Menu,
-                contentDescription = "Добавить",
-                onClick = {}
-            )
+        Row(
+            Modifier.fillMaxWidth().padding(20.dp),
+            horizontalArrangement = Arrangement.SpaceAround
+        ) {
+            StyledIconButton(onClick = {}) {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = null,
+                    tint = AccentColor,
+                    modifier = Modifier.size(32.dp)
+                )
+            }
+            StyledIconButton(onClick = {}) {
+                Text(
+                    text = "-",
+                    color = AccentColor,
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontSize = 48.sp,
+                    textAlign = TextAlign.Center
+                )
+            }
         }
     }
 }

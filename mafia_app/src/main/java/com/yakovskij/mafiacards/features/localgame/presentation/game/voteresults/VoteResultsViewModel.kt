@@ -4,8 +4,9 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.yakovskij.mafia_engine.presentation.VoteFormatter
 import com.yakovskij.mafiacards.features.localgame.data.GameRepository
-import com.yakovskij.mafiacards.features.localgame.data.GameSettingsRepository
+import com.yakovskij.mafiacards.features.localgame.data.gamesettings.GameSettingsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.coroutines.Job
@@ -21,40 +22,43 @@ open class VoteResultsViewModel @Inject constructor(
     private val _uiState = mutableStateOf(VoteResultsUiState())
     open val uiState: State<VoteResultsUiState> = _uiState
 
+    private val voteFormatter = VoteFormatter()
     private var timerJob: Job? = null
 
 
-    open fun startDiscussion(){
-        initDiscussionState()
+    open fun initViewModel(){
+        loadVoteResults()
         startTimer()
     }
 
-    open fun initDiscussionState() {
+    open fun loadVoteResults() {
         if (!_uiState.value.shouldInit) return
         val dayTime = settingsRepository.getTimerSettings().dayTime
-        val results = gameRepository.getEngine().getNightResults()
+        val results = gameRepository.getEngine().getVoteResults()
+
 
         _uiState.value = VoteResultsUiState(
-            dayTimeSeconds = dayTime,
-            dayTimeSecondsLeft = dayTime
+            showTimeSeconds = dayTime,
+            showTimeSecondsLeft = dayTime,
+            voteResults = voteFormatter.format(results)
         )
     }
 
-    open fun resetDiscussionState() {
+    open fun resetState() {
         _uiState.value = VoteResultsUiState()
     }
 
     private fun startTimer() {
         timerJob?.cancel()
         timerJob = viewModelScope.launch {
-            while (_uiState.value.dayTimeSecondsLeft > 0) {
+            while (_uiState.value.showTimeSecondsLeft > 0) {
                 delay(1000)
                 _uiState.value = _uiState.value.copy(
-                    dayTimeSecondsLeft = _uiState.value.dayTimeSecondsLeft - 1
+                    showTimeSecondsLeft = _uiState.value.showTimeSecondsLeft - 1
                 )
             }
 
-            _uiState.value = _uiState.value.copy(isViewingEnded = true) // <- таймер завершён
+            _uiState.value = _uiState.value.copy(isScreenFinished = true) // <- таймер завершён
         }
     }
 

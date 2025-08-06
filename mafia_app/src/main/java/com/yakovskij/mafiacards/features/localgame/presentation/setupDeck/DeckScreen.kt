@@ -11,6 +11,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -29,11 +33,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.yakovskij.mafia_engine.domain.RoleType
 import com.yakovskij.mafiacards.R
+import com.yakovskij.mafiacards.core.ui.components.StyledLazyColumn
+import com.yakovskij.mafiacards.core.ui.theme.MafiaCardsTheme
 import com.yakovskij.mafiacards.features.localgame.presentation.setupDeck.component.RoleCard
 
 @Composable
@@ -54,7 +61,9 @@ fun DeckScreen(
 
     Box(modifier = Modifier.fillMaxSize()) {
         Scaffold { padding ->
-            Column(modifier = Modifier.padding(padding).padding(16.dp)) {
+            Column(modifier = Modifier
+                .padding(padding)
+                .padding(16.dp)) {
                 DeckScreenContent(
                     totalPlayers = uiState.totalPlayers,
                     mafiaCount = uiState.mafiaCount,
@@ -104,21 +113,37 @@ fun DeckScreenContent(
     ) {
         Text("Колода", fontSize = 24.sp, fontWeight = FontWeight.Bold)
         Spacer(Modifier.height(16.dp))
-
-        RoleCard("Мирный", civilians, isLocked = true, imageRes = R.drawable.civfemale)
-
-        roles.forEach { (role, count) ->
-            val imageRes = when (role) {
-                RoleType.MAFIA -> R.drawable.mafia
-                RoleType.DOCTOR -> R.drawable.doctor
-                RoleType.DETECTIVE -> R.drawable.detective
-                else -> R.drawable.civmale
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(2),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier.fillMaxSize()
+        ) {
+            // Статическая карточка "Мирный"
+            item {
+                RoleCard(
+                    name = "Мирный",
+                    count = civilians,
+                    isLocked = true,
+                    imageRes = R.drawable.civfemale
+                )
             }
 
-            RoleCard(role.title, count, isLocked = false, imageRes = imageRes) {
-                onRoleChange(role, it)
+            // Остальные карточки
+            items(roles) { (role, count) ->
+                val imageRes = when (role) {
+                    RoleType.MAFIA -> R.drawable.mafia
+                    RoleType.DOCTOR -> R.drawable.doctor
+                    RoleType.DETECTIVE -> R.drawable.detective
+                    else -> R.drawable.civmale
+                }
+
+                RoleCard(role.title, count, isLocked = false, imageRes = imageRes) {
+                    onRoleChange(role, it)
+                }
             }
         }
+
 
         if (!isValueCorrect) {
             Spacer(Modifier.height(12.dp))
@@ -134,5 +159,18 @@ fun DeckScreenContent(
         Button(onClick = onBack, modifier = Modifier.fillMaxWidth(), enabled = isValueCorrect) {
             Text("Назад")
         }
+    }
+}
+
+
+@Preview(showBackground = true)
+@Composable
+fun DeckSetupPreview() {
+    val fakeViewModel = remember { FakeDeckViewModel() }
+    MafiaCardsTheme {
+        DeckScreen(
+            viewModel = fakeViewModel,
+            onBack = { }
+        )
     }
 }

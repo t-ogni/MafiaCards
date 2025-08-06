@@ -3,7 +3,7 @@ package com.yakovskij.mafiacards.features.localgame.presentation.setupPlayers
 import androidx.compose.runtime.State
 import androidx.lifecycle.ViewModel
 import com.yakovskij.mafia_engine.domain.Player
-import com.yakovskij.mafiacards.features.localgame.data.GameSettingsRepository
+import com.yakovskij.mafiacards.features.localgame.data.gamesettings.GameSettingsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 

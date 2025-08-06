@@ -3,22 +3,22 @@ package com.yakovskij.mafia_engine.domain
 sealed class NightEvent {
     data class KillAttempt(
         val performers: List<Player>,
+        val performerGroup: RoleType,
         val target: Player,
-        val wasSaved: Boolean
+        val wasSaved: Boolean = false
     ) : NightEvent()
 
-    data class Saved(
+    data class DoctorSaved(
         val performer: Player,
         val target: Player
     ) : NightEvent()
 
-    data class FailedAction(
+    data class DetectiveChecked(
         val performer: Player,
-        val target: Player,
-        val roleType: RoleType
+        val target: Player
     ) : NightEvent()
 
-    data class Blocked(
+    data class SlutBlocked(
         val blocker: Player,
         val blocked: Player
     ) : NightEvent()
@@ -29,5 +29,12 @@ sealed class NightEvent {
         val wasBlocked: Boolean
     ) : NightEvent()
 
-    data class Custom(val description: String) : NightEvent()
+    data class FailedAction(
+        val performer: Player,
+        val target: Player
+    ) : NightEvent()
+
+    data class Custom(
+        val description: String
+    ) : NightEvent()
 }

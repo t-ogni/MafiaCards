@@ -4,7 +4,7 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import com.yakovskij.mafia_engine.domain.*
 import com.yakovskij.mafiacards.features.localgame.data.GameRepository
-import com.yakovskij.mafiacards.features.localgame.data.GameSettingsRepository
+import com.yakovskij.mafiacards.features.localgame.data.gamesettings.GameSettingsRepository
 import com.yakovskij.mafiacards.features.localgame.presentation.game.voting.VotingUiState
 import com.yakovskij.mafiacards.features.localgame.presentation.game.voting.VotingViewModel
 

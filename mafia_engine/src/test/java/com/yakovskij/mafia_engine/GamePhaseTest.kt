@@ -1,6 +1,5 @@
-package com.yakovskij.mafiacards
+package com.yakovskij.mafia_engine
 
-import com.yakovskij.mafia_engine.*
 import com.yakovskij.mafia_engine.domain.*
 
 import org.junit.Before
@@ -43,6 +42,9 @@ class GamePhaseTest {
     fun `advancePhase should cycle through game phases`() {
         assertEquals(GamePhase.NIGHT, session.state.currentPhase)
 
+        engine.advancePhase() // NIGHT → NIGHT_ENDED
+        assertEquals(GamePhase.NIGHT_ENDED, session.state.currentPhase)
+
         engine.advancePhase() // NIGHT → DAY_DISCUSSION
         assertEquals(GamePhase.DAY_DISCUSSION, session.state.currentPhase)
 
@@ -50,7 +52,7 @@ class GamePhaseTest {
         assertEquals(GamePhase.VOTING, session.state.currentPhase)
 
         engine.advancePhase() // VOTING → VOTED
-        assertEquals(GamePhase.VOTED, session.state.currentPhase)
+        assertEquals(GamePhase.VOTING_ENDED, session.state.currentPhase)
 
         engine.advancePhase() // VOTED → NIGHT
         assertEquals(GamePhase.NIGHT, session.state.currentPhase)

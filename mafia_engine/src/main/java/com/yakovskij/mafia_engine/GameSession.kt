@@ -18,7 +18,7 @@ class GameSession(
     val state: GameState get() = _state.copy()
 
     fun setupGame(players: List<Player>) {
-        val deck = generateDeck().shuffled()
+        val deck = settings.allRolesList().shuffled()
 
         if (players.size != deck.size) {
             throw GameException.PlayerCountMismatch(deck.size, players.size)
@@ -28,10 +28,6 @@ class GameSession(
         if (uniqueIds.size != players.size) {
             val duplicateId = players.groupingBy { it.id }.eachCount().filter { it.value > 1 }.keys.first()
             throw GameException.DuplicatePlayerId(duplicateId)
-        }
-
-        if (settings.mafiaCount < 0 || settings.doctorCount < 0 || settings.detectiveCount < 0) {
-            throw GameException.InvalidRoleCount("mafia/doctor/detective", -1) // Здесь можно улучшить с детализацией
         }
 
         val assignedPlayers = players.mapIndexed { index, player ->
@@ -50,21 +46,6 @@ class GameSession(
 
     fun setWinner(winner: RoleType) {
         _state.winner = winner
-    }
-
-    private fun generateDeck(): List<RoleType> {
-        val deck = mutableListOf<RoleType>()
-
-        // Добавляем роли
-        repeat(settings.mafiaCount) { deck.add(RoleType.MAFIA) }
-        repeat(settings.doctorCount) { deck.add(RoleType.DOCTOR) }
-        repeat(settings.detectiveCount) { deck.add(RoleType.DETECTIVE) }
-
-        while (deck.size < settings.totalPlayers) {
-            deck.add(RoleType.CIVILIAN)
-        }
-
-        return deck
     }
 
     fun eliminatePlayer(playerId: Int) {

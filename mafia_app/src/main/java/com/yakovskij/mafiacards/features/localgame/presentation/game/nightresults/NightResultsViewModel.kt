@@ -4,9 +4,9 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.yakovskij.mafia_engine.presentation.NightFormatter
 import com.yakovskij.mafiacards.features.localgame.data.GameRepository
-import com.yakovskij.mafiacards.features.localgame.data.GameSettingsRepository
-import com.yakovskij.mafiacards.features.localgame.presentation.game.nightresults.formatter.NightEventFormatter
+import com.yakovskij.mafiacards.features.localgame.data.gamesettings.GameSettingsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.coroutines.Job
@@ -24,7 +24,7 @@ open class NightResultsViewModel @Inject constructor(
 
     private var timerJob: Job? = null
 
-    private val formatter = NightEventFormatter()
+    private val formatter = NightFormatter()
 
     open fun startDiscussion(){
         initDiscussionState()

@@ -32,9 +32,7 @@ class GameRepository @Inject constructor() {
         if(this.settings == null)
             throw GameException.GameNotSetup()
 
-        if(session == null) {
-            session = GameSession(this.settings!!)
-        }
+        session = GameSession(this.settings!!)
         session?.setupGame(players)
 
         if(engine == null)
@@ -50,6 +48,11 @@ class GameRepository @Inject constructor() {
         engine?.setSession(newSessionObj)
     }
 
+    fun reset() {
+        session = null
+        settings = null
+        engine = null
+    }
     fun getState() = session?.state!!
     fun getSettings() = this.settings!!
     fun getEngine() = this.engine!!

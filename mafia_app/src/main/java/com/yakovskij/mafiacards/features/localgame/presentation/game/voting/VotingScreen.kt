@@ -16,6 +16,13 @@ fun VotingScreen(
     onNextPhase: () -> Unit
 ) {
     val uiState by viewModel.uiState
+
+    LaunchedEffect(uiState.shouldInit) {
+        if (uiState.shouldInit) {
+            viewModel.initState()
+        }
+    }
+
     if(uiState.isVotingFinished){
         VotingEndedScreen(viewModel, onNextPhase)
     } else {

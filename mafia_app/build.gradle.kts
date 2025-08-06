@@ -83,6 +83,7 @@ dependencies {
     implementation("io.ktor:ktor-serialization-gson:$ktor_version")
 
     // Other tools
+    implementation("androidx.datastore:datastore:1.0.0")
     implementation("androidx.datastore:datastore-preferences:1.0.0")
 
     implementation(libs.androidx.core.ktx)

@@ -1,31 +1,30 @@
 package com.yakovskij.mafiacards.features.localgame.presentation.setupDeck
 
 import androidx.compose.runtime.State
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.yakovskij.mafia_engine.domain.RoleType
-import com.yakovskij.mafiacards.features.localgame.data.GameSettingsRepository
+import com.yakovskij.mafiacards.features.localgame.data.gamesettings.GameSettingsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
+import kotlinx.coroutines.launch
 
 
 @HiltViewModel
-class DeckViewModel @Inject constructor(
+open class DeckViewModel @Inject constructor(
     private val repository: GameSettingsRepository
 ) : ViewModel() {
 
     private val _uiState = mutableStateOf(
         DeckUiState(
-            mafiaCount = repository.getMafiaCount(),
-            doctorCount = repository.getDoctorCount(),
-            detectiveCount = repository.getDetectiveCount(),
-            totalPlayers = repository.getGameSettings().totalPlayers
+            mafiaCount = repository.getRoleCount(RoleType.MAFIA),
+            doctorCount = repository.getRoleCount(RoleType.DOCTOR),
+            detectiveCount = repository.getRoleCount(RoleType.DETECTIVE),
+            totalPlayers = repository.getTotalRolesCount()
         )
     )
-    val uiState: State<DeckUiState> = _uiState
+    open val uiState: State<DeckUiState> = _uiState
 
     init {
         validateInitialState()
@@ -71,12 +70,8 @@ class DeckViewModel @Inject constructor(
 
             else -> {
                 _uiState.value = newState.copy(errorMessage = null, isValueCorrect = true)
-                // сохраняем в репозиторий
-                when (role) {
-                    RoleType.MAFIA -> repository.updateMafiaCount(safeCount)
-                    RoleType.DOCTOR -> repository.updateDoctorCount(safeCount)
-                    RoleType.DETECTIVE -> repository.updateDetectiveCount(safeCount)
-                    else -> Unit
+                viewModelScope.launch {
+                    repository.updateRoleCount(role, safeCount)
                 }
             }
         }

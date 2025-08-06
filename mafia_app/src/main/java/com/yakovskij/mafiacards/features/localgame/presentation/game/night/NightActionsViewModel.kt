@@ -7,7 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.yakovskij.mafia_engine.*
 import com.yakovskij.mafia_engine.domain.*
 import com.yakovskij.mafiacards.features.localgame.data.GameRepository
-import com.yakovskij.mafiacards.features.localgame.data.GameSettingsRepository
+import com.yakovskij.mafiacards.features.localgame.data.gamesettings.GameSettingsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -72,7 +72,7 @@ class NightActionsViewModel @Inject constructor(
             else ->  "Вы — ${role.title}. Выполните ваше действие."
         }
 
-        val allTargets = gameRepository.getState()?.players ?: emptyList()
+        val allTargets = gameRepository.getState().players
         val aliveTargets = allTargets.filter { it.isAlive  && it.id != player.id }
         val aliveTargetsIncludingItself = allTargets.filter { it.isAlive }
 
@@ -91,12 +91,12 @@ class NightActionsViewModel @Inject constructor(
             promptText = prompt,
             availableTargets = targets,
             isActionTaken = false,
-            timeLeftSeconds = settingsRepository.getTimerSettings().nightTime.toFloat()
+            timeLeftSeconds = settingsRepository.getNightTime().toFloat()
         )
     }
 
     fun startNightTimer() {
-        val nightTime = settingsRepository.getTimerSettings().nightTime
+        val nightTime = settingsRepository.getNightTime()
         _uiState.value = _uiState.value.copy(
             timeToAction = nightTime,
             timeLeftSeconds = nightTime.toFloat(),

@@ -5,14 +5,15 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.yakovskij.mafia_engine.domain.Player
 import com.yakovskij.mafiacards.features.localgame.data.GameRepository
-import com.yakovskij.mafiacards.features.localgame.data.GameSettingsRepository
+import com.yakovskij.mafiacards.features.localgame.data.gamesettings.GameSettingsRepository
+import com.yakovskij.mafiacards.features.localgame.data.gamesettings.IGameSettingsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 
 @HiltViewModel
 open class VotingViewModel @Inject constructor(
     private val gameRepository: GameRepository,
-    private val settingsRepository: GameSettingsRepository
+    private val settingsRepository: IGameSettingsRepository
 ) : ViewModel() {
 
     private val _uiState = mutableStateOf(VotingUiState())
@@ -70,6 +71,10 @@ open class VotingViewModel @Inject constructor(
 
     fun skipVote(){
         nextPlayerOrFinish()
+    }
+
+    fun calculateVotes(){
+        gameRepository.getEngine().calculateVotesAndJail()
     }
 }
 

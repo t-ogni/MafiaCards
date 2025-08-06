@@ -15,7 +15,7 @@ class PlayerSetupViewModel @Inject constructor(
     val players: State<List<Player>> = repository.players
 
     fun updateTotalPlayers(count: Int) {
-        repository.updateTotalPlayers(count)
+        repository.syncPlayerList(count)
     }
 
     fun updatePlayerName(index: Int, name: String) {

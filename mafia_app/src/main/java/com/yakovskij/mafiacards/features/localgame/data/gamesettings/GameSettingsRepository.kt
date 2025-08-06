@@ -29,7 +29,7 @@ class GameSettingsRepository @Inject constructor(
     private var timerSettings: TimerSettings = TimerSettings()
 
     private val _players = mutableStateOf<List<Player>>(emptyList())
-    val players: State<List<Player>> get() = _players
+    override val players: State<List<Player>> get() = _players
 
     companion object {
         private val SETTINGS_KEY = stringPreferencesKey("game_settings_json")
@@ -42,7 +42,10 @@ class GameSettingsRepository @Inject constructor(
         }
     }
 
-    suspend fun loadSettings() {
+    override fun getGameSettings() : GameSettings { return gameSettings }
+    override fun getTimerSettings() : TimerSettings { return timerSettings }
+
+    override suspend fun loadSettings() {
         val json = dataStore.data.first()[SETTINGS_KEY]
         if (!json.isNullOrBlank()) {
             gameSettings = parseJsonToGameSettings(json)
@@ -54,36 +57,36 @@ class GameSettingsRepository @Inject constructor(
         dataStore.edit { prefs -> prefs[SETTINGS_KEY] = json }
     }
 
-    suspend fun updateRoleCount(role: RoleType, count: Int) {
+    override suspend fun updateRoleCount(role: RoleType, count: Int) {
         gameSettings.setCount(role, count.coerceAtLeast(0))
         saveSettings()
         syncPlayerList(gameSettings.getTotalRolesCount())
     }
 
-    suspend fun incrementRoleCount(role: RoleType) {
+    override suspend fun incrementRoleCount(role: RoleType) {
         updateRoleCount(role, gameSettings.getCountFor(role) + 1)
     }
 
-    suspend fun decrementRoleCount(role: RoleType) {
+    override suspend fun decrementRoleCount(role: RoleType) {
         updateRoleCount(role, (gameSettings.getCountFor(role) - 1).coerceAtLeast(0))
     }
 
-    fun getRoleCount(role: RoleType): Int = gameSettings.getCountFor(role)
-    fun getTotalActiveRolesCount(): Int = gameSettings.getTotalActiveRolesCount()
-    fun getTotalRolesCount(): Int = gameSettings.getTotalRolesCount()
+    override fun getRoleCount(role: RoleType): Int = gameSettings.getCountFor(role)
+    override fun getTotalActiveRolesCount(): Int = gameSettings.getTotalActiveRolesCount()
+    override fun getTotalRolesCount(): Int = gameSettings.getTotalRolesCount()
 
 
     // --- Таймеры пока не сохраняем
-    fun getDayTime() : Int { return timerSettings.dayTime }
-    fun getNightTime() : Int { return timerSettings.nightTime }
-    fun getVoteTime() : Int { return timerSettings.voteTime }
+    override fun getDayTime() : Int { return timerSettings.dayTime }
+    override fun getNightTime() : Int { return timerSettings.nightTime }
+    override fun getVoteTime() : Int { return timerSettings.voteTime }
 
     // --- Таймеры пока не сохраняем
-    fun updateDayTime(seconds: Int) { timerSettings = timerSettings.copy(dayTime = seconds) }
-    fun updateNightTime(seconds: Int) { timerSettings = timerSettings.copy(nightTime = seconds) }
-    fun updateVoteTime(seconds: Int) { timerSettings = timerSettings.copy(voteTime = seconds) }
+    override fun updateDayTime(seconds: Int) { timerSettings = timerSettings.copy(dayTime = seconds) }
+    override fun updateNightTime(seconds: Int) { timerSettings = timerSettings.copy(nightTime = seconds) }
+    override fun updateVoteTime(seconds: Int) { timerSettings = timerSettings.copy(voteTime = seconds) }
 
-    fun updatePlayerName(index: Int, name: String) {
+    override fun updatePlayerName(index: Int, name: String) {
         val updated = _players.value.toMutableList()
         if (index in updated.indices) {
             updated[index] = updated[index].copy(name = name)
@@ -91,13 +94,41 @@ class GameSettingsRepository @Inject constructor(
         }
     }
 
-    private fun syncPlayerList(totalPlayers: Int) {
+    override fun syncPlayerList(totalPlayers: Int) {
         val current = _players.value
         val newList = List(totalPlayers) { index ->
             current.getOrNull(index) ?: Player(index + 1, "Игрок ${index + 1}")
         }
         _players.value = newList
     }
+
+    override fun balanceRolesToMatchPlayerCount(newPlayerCount: Int): Boolean {
+        val currentCount = gameSettings.getTotalRolesCount()
+        val civilians = gameSettings.getCountFor(RoleType.CIVILIAN)
+
+        return when {
+            newPlayerCount > currentCount -> {
+                // Добавляем недостающих мирных
+                val toAdd = newPlayerCount - currentCount
+                gameSettings.setCount(RoleType.CIVILIAN, civilians + toAdd)
+                true
+            }
+
+            newPlayerCount < currentCount -> {
+                // Пытаемся удалить лишние роли из мирных
+                val toRemove = currentCount - newPlayerCount
+                if (civilians >= toRemove) {
+                    gameSettings.setCount(RoleType.CIVILIAN, civilians - toRemove)
+                    true
+                } else {
+                    false // Ошибка: не хватает мирных для удаления
+                }
+            }
+
+            else -> true // Ничего делать не нужно
+        }
+    }
+
 
     // --- JSON helpers
 

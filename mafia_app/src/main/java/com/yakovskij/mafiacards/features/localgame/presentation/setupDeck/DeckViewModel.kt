@@ -5,7 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yakovskij.mafia_engine.domain.RoleType
-import com.yakovskij.mafiacards.features.localgame.data.gamesettings.GameSettingsRepository
+import com.yakovskij.mafiacards.features.localgame.data.gamesettings.IGameSettingsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.coroutines.launch
@@ -13,7 +13,7 @@ import kotlinx.coroutines.launch
 
 @HiltViewModel
 open class DeckViewModel @Inject constructor(
-    private val repository: GameSettingsRepository
+    private val repository: IGameSettingsRepository
 ) : ViewModel() {
 
     private val _uiState = mutableStateOf(

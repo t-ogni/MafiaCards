@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.yakovskij.mafia_engine.presentation.NightFormatter
 import com.yakovskij.mafiacards.features.localgame.data.GameRepository
 import com.yakovskij.mafiacards.features.localgame.data.gamesettings.GameSettingsRepository
+import com.yakovskij.mafiacards.features.localgame.data.gamesettings.IGameSettingsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.coroutines.Job
@@ -16,7 +17,7 @@ import kotlinx.coroutines.launch
 @HiltViewModel
 open class NightResultsViewModel @Inject constructor(
     private val gameRepository: GameRepository,
-    private val settingsRepository: GameSettingsRepository
+    private val settingsRepository: IGameSettingsRepository
 ) : ViewModel() {
 
     private val _uiState = mutableStateOf(NightResultsUiState())
@@ -33,7 +34,7 @@ open class NightResultsViewModel @Inject constructor(
 
     open fun initDiscussionState() {
         if (!_uiState.value.shouldInit) return
-        val dayTime = settingsRepository.getTimerSettings().dayTime
+        val dayTime = settingsRepository.getDayTime()
         val results = gameRepository.getEngine().getNightResults()
 
         _uiState.value = NightResultsUiState(

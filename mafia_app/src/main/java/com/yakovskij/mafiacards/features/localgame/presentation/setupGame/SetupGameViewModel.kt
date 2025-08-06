@@ -31,9 +31,19 @@ class SetupGameViewModel @Inject constructor(
     val uiState: State<SetupGameUiState> = _uiState
 
     fun changeTotalPlayers(value: Int) {
+        val success = settingsRepository.balanceRolesToMatchPlayerCount(value)
+
+        if (!success) {
+            _uiState.value = _uiState.value.copy(
+                errors = uiState.value.errors + "Невозможно уменьшить число игроков — недостаточно мирных для удаления!"
+            )
+            return
+        }
+
         _totalPlayers.intValue = value
-        settingsRepository.up(value)
+        settingsRepository.syncPlayerList(value)
     }
+
 
     fun changeDayTime(value: Int) {
         _dayTime.intValue = value
@@ -51,13 +61,19 @@ class SetupGameViewModel @Inject constructor(
     }
 
     fun startGame() {
-        if(settingsRepository.getTotalActiveRolesCount() > settingsRepository.getGameSettings().totalPlayers()) {
-            val errorsNew = uiState.value.errors + "Test"
-            _uiState.value = _uiState.value.copy(errors = errorsNew)
+        val totalPlayers = settingsRepository.players.value.size
+        val totalRoles = settingsRepository.getTotalRolesCount()
+
+        if (totalRoles != totalPlayers) {
+            _uiState.value = _uiState.value.copy(
+                errors = uiState.value.errors + "Нельзя начать игру — число ролей ($totalRoles) не совпадает с числом игроков ($totalPlayers)"
+            )
+            return
         }
 
         gameRepository.saveSettings(settingsRepository.getGameSettings())
         gameRepository.startGame(settingsRepository.players.value)
     }
+
 
 }

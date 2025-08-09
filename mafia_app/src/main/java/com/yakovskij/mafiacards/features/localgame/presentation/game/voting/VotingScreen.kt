@@ -1,13 +1,25 @@
 package com.yakovskij.mafiacards.features.localgame.presentation.game.voting
 
 import android.content.res.Configuration
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.yakovskij.mafiacards.core.ui.theme.MafiaCardsTheme
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
 
 
 @Composable
@@ -22,11 +34,38 @@ fun VotingScreen(
             viewModel.initState()
         }
     }
+    var isDimmed by remember { mutableStateOf(false) }
 
+    LaunchedEffect(isDimmed) {
+        if (isDimmed) {
+            delay(300)
+            isDimmed = false
+        }
+    }
+
+    // Альфа анимируется от 0f (нет затемнения) до 0.5f (полупрозрачный фон)
+    val dimAlpha by animateFloatAsState(
+        targetValue = if (isDimmed) 0.5f else 0f,
+        animationSpec = tween(durationMillis = 300),
+        label = "dimAlpha"
+    )
+
+    Box(modifier = Modifier.fillMaxSize()) {
+        // Затемняющий слой
+        if (dimAlpha > 0f) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Black.copy(alpha = dimAlpha))
+            )
+        }
+    }
     if(uiState.isVotingFinished){
         VotingEndedScreen(viewModel, onNextPhase)
     } else {
-        PlayerVotingScreen(viewModel)
+        PlayerVotingScreen(viewModel, onVoted = {
+            isDimmed = true
+        })
     }
 }
 
@@ -57,6 +96,7 @@ fun VotingScreenPreview_MultiDevice() {
     MafiaCardsTheme {
         PlayerVotingScreen(
             viewModel = fakeViewModel
-        )
+        ) {
+        }
     }
 }

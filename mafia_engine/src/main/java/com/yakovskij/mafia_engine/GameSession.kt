@@ -1,6 +1,7 @@
 package com.yakovskij.mafia_engine
 
 import com.yakovskij.mafia_engine.domain.*
+import com.yakovskij.mafia_engine.domain.role.RoleType
 
 
 // GameSession — это хранилище и управляющий объект состояния игры
@@ -12,7 +13,7 @@ class GameSession(
     private val _state = GameState(
         players = emptyList(),
         currentPhase = GamePhase.SETUP,
-        turnNumber = 0,
+        cycleNumber = 0,
         winner = null
     )
     val state: GameState get() = _state.copy()
@@ -37,7 +38,7 @@ class GameSession(
         _state.players = assignedPlayers
         _state.winner = null
         _state.currentPhase = GamePhase.SETUP
-        _state.turnNumber = 0
+        _state.cycleNumber = 0
     }
 
     fun setPhase(next: GamePhase) {
@@ -60,5 +61,17 @@ class GameSession(
             if (it.id == playerId) it.copy(isAlive = true) else it
         }
         _state.players = updated
+    }
+
+    fun getPlayerById(playerId: Int): Player? {
+        return _state.players.firstOrNull()
+    }
+
+    fun getPlayers(): List<Player> {
+        return _state.players
+    }
+
+    fun incrementCycle() {
+        _state.cycleNumber += 1
     }
 }

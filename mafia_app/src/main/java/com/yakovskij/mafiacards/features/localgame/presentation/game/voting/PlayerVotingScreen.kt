@@ -1,6 +1,5 @@
 package com.yakovskij.mafiacards.features.localgame.presentation.game.voting
 
-import android.content.res.Configuration
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,11 +14,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.yakovskij.mafiacards.core.ui.components.StyledButton
@@ -29,11 +25,11 @@ import com.yakovskij.mafiacards.core.ui.components.StyledOutlinedButton
 import com.yakovskij.mafiacards.core.ui.components.StyledOutlinedCard
 import com.yakovskij.mafiacards.core.ui.components.StyledVineBackground
 import com.yakovskij.mafiacards.core.ui.theme.LightTextColor
-import com.yakovskij.mafiacards.core.ui.theme.MafiaCardsTheme
 
 @Composable
 fun PlayerVotingScreen(
-    viewModel: VotingViewModel = hiltViewModel()
+    viewModel: VotingViewModel = hiltViewModel(),
+    onVoted: () -> Unit
 ) {
     val uiState by viewModel.uiState
 

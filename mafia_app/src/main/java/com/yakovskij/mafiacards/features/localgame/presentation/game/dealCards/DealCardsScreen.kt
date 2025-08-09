@@ -37,7 +37,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.graphicsLayer
-import com.yakovskij.mafia_engine.domain.RoleType
+import com.yakovskij.mafia_engine.domain.role.RoleType
 import com.yakovskij.mafiacards.features.localgame.presentation.game.dealCards.FaceCard
 import com.yakovskij.mafiacards.features.localgame.presentation.game.dealCards.CardFlipper
 import com.yakovskij.mafiacards.features.localgame.presentation.game.dealCards.BackCard

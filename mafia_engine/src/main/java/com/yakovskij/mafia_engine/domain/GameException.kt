@@ -16,6 +16,8 @@ sealed class GameException(message: String) : Exception(message) {
 
     class InvalidRoleCount(role: String, count: Int) : GameException("Неверное количество ролей '$role': $count. Должно быть >= 0.")
 
+    class PlayerNotFound() : GameException("Игрок не найден")
+
     class GameNotSetup() : GameException("Игра не была корректно инициализирована. Выполните setupGame прежде, чем начать.")
 
     class InvalidTarget() : GameException("Выбранная жертва не существует в игре")

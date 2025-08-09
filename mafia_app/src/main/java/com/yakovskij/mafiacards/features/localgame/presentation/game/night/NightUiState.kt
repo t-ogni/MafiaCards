@@ -1,7 +1,7 @@
 package com.yakovskij.mafiacards.features.localgame.presentation.game.night
 
 import com.yakovskij.mafia_engine.domain.Player
-import com.yakovskij.mafia_engine.domain.RoleType
+import com.yakovskij.mafia_engine.domain.role.RoleType
 
 data class NightUiState(
     val currentPlayer: Player? = null,

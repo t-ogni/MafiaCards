@@ -1,6 +1,7 @@
 package com.yakovskij.mafia_engine
 
 import com.yakovskij.mafia_engine.domain.*
+import com.yakovskij.mafia_engine.domain.role.RoleType
 
 import org.junit.Before
 import org.junit.Test
@@ -16,12 +17,11 @@ class GamePhaseTest {
 
     @Before
     fun setup() {
-        settings = GameSettings(
-            totalPlayers = 4,
-            mafiaCount = 1,
-            doctorCount = 1,
-            detectiveCount = 1
-        )
+        settings = GameSettings()
+
+        settings.setCount(RoleType.MAFIA, 1)
+        settings.setCount(RoleType.DOCTOR, 1)
+        settings.setCount(RoleType.CIVILIAN, 2)
 
         session = GameSession(settings)
         voteProcessor = VoteProcessor(session)
@@ -61,15 +61,17 @@ class GamePhaseTest {
     @Test
     fun `transition to NIGHT clears votes and night actions`() {
         // Добавим голос
-        engine.user(1).voted(2)
+        engine.player(1).voted(2)
         assertNotNull(voteProcessor.calculateVotesAndJail()) // проголосовал
 
         // Добавим ночное действие (допустим, от DOCTOR)
-        engine.user(3).targets(1)
+        engine.player(3).targets(1)
         assertFalse(nightProcessor.getActions().isEmpty())
 
-        engine.advancePhase() // NIGHT → DAY_DISCUSSION
-        engine.advancePhase() // DAY_DISCUSSION → VOTING
+        while (engine.getNextPhase() != GamePhase.VOTING) {
+            engine.advancePhase() // → VOTING
+        }
+
         engine.advancePhase() // VOTING → VOTED
         engine.advancePhase() // VOTED → NIGHT
 

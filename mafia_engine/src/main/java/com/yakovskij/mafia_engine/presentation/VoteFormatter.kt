@@ -12,9 +12,9 @@ class VoteFormatter {
 
             is VoteResult.Tie -> {
                 val playerNames = if (voteResult.tiedPlayers.size == 2) {
-                    "${voteResult.tiedPlayers[0]} и ${voteResult.tiedPlayers[1]}"
+                    "${voteResult.tiedPlayers[0].name} и ${voteResult.tiedPlayers[1].name}"
                 } else {
-                     voteResult.tiedPlayers.joinToString(", ")
+                    voteResult.tiedPlayers.joinToString(", ") { it.name }
                 }
                 return "Город не смог придти к единому мнению, голоса разделились между игроками $playerNames."
             }

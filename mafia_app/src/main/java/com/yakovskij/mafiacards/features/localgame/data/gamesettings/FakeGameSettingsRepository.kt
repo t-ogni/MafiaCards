@@ -4,7 +4,7 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import com.yakovskij.mafia_engine.domain.GameSettings
 import com.yakovskij.mafia_engine.domain.Player
-import com.yakovskij.mafia_engine.domain.RoleType
+import com.yakovskij.mafia_engine.domain.role.RoleType
 import com.yakovskij.mafiacards.features.localgame.domain.TimerSettings
 
 class FakeGameSettingsRepository : IGameSettingsRepository {

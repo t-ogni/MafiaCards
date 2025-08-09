@@ -1,7 +1,7 @@
 package com.yakovskij.mafia_engine.presentation
 
 import com.yakovskij.mafia_engine.domain.NightEvent
-import com.yakovskij.mafia_engine.domain.RoleType
+import com.yakovskij.mafia_engine.domain.role.RoleType
 
 class NightFormatter {
     fun format(events: List<NightEvent>): List<String> {

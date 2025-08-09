@@ -1,5 +1,7 @@
 package com.yakovskij.mafia_engine.domain
 
+import com.yakovskij.mafia_engine.domain.role.RoleType
+
 sealed class NightEvent {
     data class KillAttempt(
         val performers: List<Player>,

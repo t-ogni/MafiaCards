@@ -1,5 +1,7 @@
 package com.yakovskij.mafia_engine.domain
 
+import com.yakovskij.mafia_engine.domain.role.RoleType
+
 data class GameSettings(
     val roleCounts: MutableMap<RoleType, Int> = mutableMapOf(
 //        RoleType.MAFIA to 2,

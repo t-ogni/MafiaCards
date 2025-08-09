@@ -62,6 +62,7 @@ fun GameScreen(
         Box(modifier = Modifier.padding(innerPadding)) {
             when (uiState.phase) {
                 GamePhase.SETUP -> DealCardsScreen(onNightStart = gameViewModel::advancePhase)
+                GamePhase.DAY_WITHOUT_VOTING -> NightPhaseScreen(onNextPhase = gameViewModel::advancePhase)
                 GamePhase.NIGHT -> NightPhaseScreen(onNextPhase = gameViewModel::advancePhase)
                 GamePhase.NIGHT_ENDED -> NightResultsScreen(onNextPhase = gameViewModel::advancePhase)
                 GamePhase.DAY_DISCUSSION -> PropScreen(onAction = gameViewModel::advancePhase)

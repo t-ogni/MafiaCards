@@ -7,7 +7,7 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.yakovskij.mafia_engine.domain.GameSettings
 import com.yakovskij.mafia_engine.domain.Player
-import com.yakovskij.mafia_engine.domain.RoleType
+import com.yakovskij.mafia_engine.domain.role.RoleType
 import com.yakovskij.mafiacards.features.localgame.domain.TimerSettings
 import com.yakovskij.mafiacards.gameSettingsDataStore
 import dagger.hilt.android.qualifiers.ApplicationContext

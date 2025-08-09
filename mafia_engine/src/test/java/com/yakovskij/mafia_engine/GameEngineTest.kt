@@ -2,6 +2,7 @@ package com.yakovskij.mafiacards
 
 import com.yakovskij.mafia_engine.*
 import com.yakovskij.mafia_engine.domain.*
+import com.yakovskij.mafia_engine.domain.role.RoleType
 import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -9,7 +10,11 @@ import kotlin.test.assertTrue
 class GameEngineTest {
     @Test
     fun `Победа после убийства жителя мафией на 3 игрока`() {
-        val settings = GameSettings(3, 1, 0, 0)
+        val settings = GameSettings()
+
+        settings.setCount(RoleType.MAFIA, 1)
+        settings.setCount(RoleType.DOCTOR, 1)
+        settings.setCount(RoleType.CIVILIAN, 2)
 
         val players = listOf(
             Player(id = 1, name = "Андрей"),
@@ -27,7 +32,7 @@ class GameEngineTest {
         val mafia = session.state.players.find { it.role == RoleType.MAFIA }!!
         val civ = session.state.players.filter { it.role == RoleType.CIVILIAN }
 
-        engine.user(mafia.id).targets(civ.first().id)
+        engine.player(mafia.id).targets(civ.first().id)
         engine.performNightActions()
 
         val result = engine.checkWinCondition() == RoleType.MAFIA
@@ -39,7 +44,11 @@ class GameEngineTest {
 
     @Test
     fun `док спасает жителя от убийства`() {
-        val settings = GameSettings(3, 1, 1, 0)
+        val settings = GameSettings()
+
+        settings.setCount(RoleType.MAFIA, 1)
+        settings.setCount(RoleType.DOCTOR, 1)
+        settings.setCount(RoleType.CIVILIAN, 1)
 
         val players = listOf(
             Player(id = 1, name = "Андрей"),
@@ -58,8 +67,8 @@ class GameEngineTest {
         val doc = session.state.players.firstOrNull { it.role == RoleType.DOCTOR }!!
         val civ = session.state.players.firstOrNull { it.role == RoleType.CIVILIAN }!!
 
-        engine.user(mafia.id).targets(civ.id)
-        engine.user(doc.id).targets(civ.id)
+        engine.player(mafia.id).targets(civ.id)
+        engine.player(doc.id).targets(civ.id)
 
         engine.performNightActions()
 
@@ -69,7 +78,11 @@ class GameEngineTest {
 
     @Test
     fun `Кик на голосовании`() {
-        val settings = GameSettings(3, 1, 1, 0)
+        val settings = GameSettings()
+
+        settings.setCount(RoleType.MAFIA, 1)
+        settings.setCount(RoleType.DOCTOR, 1)
+        settings.setCount(RoleType.CIVILIAN, 1)
 
         val players = listOf(
             Player(id = 1, name = "Андрей"),
@@ -90,9 +103,9 @@ class GameEngineTest {
         val doc = session.state.players.firstOrNull { it.role == RoleType.DOCTOR }!!
         val civ = session.state.players.firstOrNull { it.role == RoleType.CIVILIAN }!!
 
-        engine.user(mafia.id).voted(doc.id)
-        engine.user(civ.id).voted(doc.id)
-        engine.user(doc.id).voted(mafia.id)
+        engine.player(mafia.id).voted(doc.id)
+        engine.player(civ.id).voted(doc.id)
+        engine.player(doc.id).voted(mafia.id)
 
         engine.calculateVotesAndJail()
 

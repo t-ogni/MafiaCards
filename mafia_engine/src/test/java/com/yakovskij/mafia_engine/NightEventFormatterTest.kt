@@ -2,7 +2,7 @@ package com.yakovskij.mafia_engine
 
 import com.yakovskij.mafia_engine.domain.NightEvent
 import com.yakovskij.mafia_engine.domain.Player
-import com.yakovskij.mafia_engine.domain.RoleType
+import com.yakovskij.mafia_engine.domain.role.RoleType
 import com.yakovskij.mafia_engine.presentation.NightFormatter
 import org.junit.Before
 import org.junit.Test

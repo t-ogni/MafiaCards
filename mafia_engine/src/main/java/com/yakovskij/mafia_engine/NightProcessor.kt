@@ -1,6 +1,7 @@
 package com.yakovskij.mafia_engine
 
 import com.yakovskij.mafia_engine.domain.*
+import com.yakovskij.mafia_engine.domain.role.RoleType
 import kotlin.collections.mutableListOf
 
 class NightProcessor(private var session: GameSession) {
@@ -8,7 +9,7 @@ class NightProcessor(private var session: GameSession) {
     private val events = mutableListOf<NightEvent>()
 
     fun addAction(performerId: Int, targetId: Int) {
-        val performer = session.state.players.firstOrNull { it.id == performerId }!!
+        val performer = session.getPlayerById(performerId) ?: throw GameException.PlayerNotFound()
 
         if (!performer.isAlive) throw GameException.DeadPlayerAction()
 

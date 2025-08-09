@@ -15,6 +15,10 @@ class VoteProcessor(private var session: GameSession) {
         voteMap[voterId] = targetId
     }
 
+    fun clearVoteByPlayer(voterId: Int) {
+        voteMap.remove(voterId)
+    }
+
     fun clearVotes() {
         voteMap.clear()
         voteResult = null
@@ -46,4 +50,5 @@ class VoteProcessor(private var session: GameSession) {
             null
         }
     }
+
 }

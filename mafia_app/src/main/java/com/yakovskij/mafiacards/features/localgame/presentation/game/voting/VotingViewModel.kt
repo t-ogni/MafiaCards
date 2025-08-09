@@ -5,7 +5,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.yakovskij.mafia_engine.domain.Player
 import com.yakovskij.mafiacards.features.localgame.data.GameRepository
-import com.yakovskij.mafiacards.features.localgame.data.gamesettings.GameSettingsRepository
 import com.yakovskij.mafiacards.features.localgame.data.gamesettings.IGameSettingsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
@@ -39,11 +38,21 @@ open class VotingViewModel @Inject constructor(
     }
 
     open fun addVote(performer: Player, target: Player){
-        gameRepository.getEngine().user(performer.id).voted(target.id)
+        gameRepository.getEngine().player(performer.id).voted(target.id)
+    }
+
+    fun updateVote(performerId: Int, targetId: Int){
+        val playerController = gameRepository.getEngine().player(performerId)
+        playerController.clearVote()
+        playerController.voted(targetId)
     }
 
     fun selectPlayerToVote(target: Player){
         _uiState.value = _uiState.value.copy(selectedToVotePlayer = target)
+    }
+
+    fun getPlayerById(id: Int?, list: List<Player>): Player? {
+        return list.find { it.id == id }
     }
 
     fun nextPlayerOrFinish(){

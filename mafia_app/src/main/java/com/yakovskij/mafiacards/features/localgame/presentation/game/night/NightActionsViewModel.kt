@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yakovskij.mafia_engine.*
 import com.yakovskij.mafia_engine.domain.*
+import com.yakovskij.mafia_engine.domain.role.RoleType
 import com.yakovskij.mafiacards.features.localgame.data.GameRepository
 import com.yakovskij.mafiacards.features.localgame.data.gamesettings.GameSettingsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -122,7 +123,8 @@ class NightActionsViewModel @Inject constructor(
         val player : Player = _uiState.value.currentPlayer ?: return
 
         if (target != null) {
-            engine.user(player.id).targets(target.id)
+            engine.player(player.id).targets(target.id)
+            // DeadPlayerAction: Мёртвый игрок не может взаимодействовать при второй ночи. почему-то убитый (мафией) игрок появился во второй ночи.
         }
 
         _uiState.value = _uiState.value.copy(

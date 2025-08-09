@@ -4,7 +4,7 @@ import com.yakovskij.mafia_engine.domain.GameException
 import com.yakovskij.mafia_engine.domain.GamePhase
 import com.yakovskij.mafia_engine.domain.GameSettings
 import com.yakovskij.mafia_engine.domain.Player
-import com.yakovskij.mafia_engine.domain.RoleType
+import com.yakovskij.mafia_engine.domain.role.RoleType
 import com.yakovskij.mafiacards.features.localgame.data.GameRepository
 import org.junit.Assert.*
 import org.junit.Before

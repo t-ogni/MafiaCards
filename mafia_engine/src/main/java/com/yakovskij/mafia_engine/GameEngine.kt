@@ -1,6 +1,8 @@
 package com.yakovskij.mafia_engine
 
 import com.yakovskij.mafia_engine.domain.*
+import com.yakovskij.mafia_engine.domain.role.RoleType
+import com.yakovskij.mafia_engine.domain.role.TeamSide
 
 //  GameEngine — это мозг игры, её логика, сценарии, искусственный режиссёр
 //  принимает решения,
@@ -23,23 +25,27 @@ open class GameEngine(
         nightProcessor.setSession(newSession)
     }
 
-    fun user(id: Int): PlayerController {
+    fun getPlayers(): List<Player> {
+        return session.getPlayers()
+    }
+
+    fun player(id: Int): PlayerController {
         return PlayerController(id, this)
     }
 
-    fun user(player: Player): PlayerController {
+    fun player(player: Player): PlayerController {
         return PlayerController(player.id, this)
     }
     fun calculateVotesAndJail(): Int? = voteProcessor.calculateVotesAndJail()
     fun performNightActions() = nightProcessor.performNightActions()
 
     fun checkWinCondition(): RoleType? {
-        val mafiaAlive = session.state.players.count { it.role == RoleType.MAFIA && it.isAlive }
-        val civiliansAlive = session.state.players.count { it.role != RoleType.MAFIA && it.isAlive }
-
+        val players = session.getPlayers()
+        val mafiaAlive = players.count { it.isAlive && it.role?.side == TeamSide.MAFIA }
+        val civAlive = players.count { it.isAlive && it.role?.side == TeamSide.CIVILIANS }
         return when {
             mafiaAlive == 0 -> RoleType.CIVILIAN
-            civiliansAlive == 1 && mafiaAlive > 0 -> RoleType.MAFIA
+            civAlive == 1 && mafiaAlive > 0 -> RoleType.MAFIA
             else -> null
         }
     }
@@ -67,12 +73,26 @@ open class GameEngine(
         return nextPhase
     }
     fun advancePhase() {
+        onOldPhaseEnded(session.state.currentPhase)
         val nextPhase = getNextPhase()
         session.setPhase(nextPhase)
-        onPhaseChange(nextPhase)
+        onNewPhase(nextPhase)
     }
 
-    private fun onPhaseChange(phase: GamePhase) {
+
+    private fun onOldPhaseEnded(phase: GamePhase) {
+        when (phase) {
+            GamePhase.NIGHT_ENDED -> {
+                checkWinCondition()  // после просмотра газеты посмотрим, есть ли победа
+            }
+            GamePhase.VOTING_ENDED -> {
+                checkWinCondition()  // после тюрьмы посмотрим, есть ли победа
+            }
+            else -> {}
+        }
+    }
+
+    private fun onNewPhase(phase: GamePhase) {
         when (phase) {
             GamePhase.NIGHT -> {
                 nightProcessor.clearEvents()
@@ -81,10 +101,15 @@ open class GameEngine(
             GamePhase.VOTING -> {
                 voteProcessor.clearVotes()
             }
+            GamePhase.DAY_WITHOUT_VOTING -> {
+                session.incrementCycle()
+            }
+            GamePhase.DAY_DISCUSSION -> {
+                session.incrementCycle()
+            }
 
             else -> {}
         }
-        checkWinCondition()
     }
 
     fun getNightResults(): List<NightEvent> = nightProcessor.getEvents()

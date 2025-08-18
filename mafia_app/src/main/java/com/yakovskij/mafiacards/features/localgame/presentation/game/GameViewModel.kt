@@ -35,6 +35,14 @@ class GameViewModel @Inject constructor(
         gameRepository.reset()
     }
 
+    fun startNewGame() {
+        gameRepository.reset()
+    }
+
+    fun exitGame(){
+
+    }
+
     fun markPhaseAsCompleted() {
         _uiState.value = _uiState.value.copy(hasProceededToNextPhase = true)
     }

@@ -37,6 +37,9 @@ open class VotingViewModel @Inject constructor(
         )
     }
 
+    fun clearState() {
+        _uiState.value = VotingUiState()
+    }
     open fun addVote(performer: Player, target: Player){
         gameRepository.getEngine().player(performer.id).voted(target.id)
     }

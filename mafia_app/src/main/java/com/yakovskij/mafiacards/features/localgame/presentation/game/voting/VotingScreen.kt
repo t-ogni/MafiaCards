@@ -34,6 +34,14 @@ fun VotingScreen(
             viewModel.initState()
         }
     }
+
+    LaunchedEffect(uiState.isViewingEnded) {
+        if (uiState.isViewingEnded) {
+            viewModel.clearState()
+            onNextPhase()
+        }
+    }
+
     var isDimmed by remember { mutableStateOf(false) }
 
     LaunchedEffect(isDimmed) {
@@ -51,6 +59,14 @@ fun VotingScreen(
     )
 
     Box(modifier = Modifier.fillMaxSize()) {
+        if(uiState.isVotingFinished){
+            VotingEndedScreen(viewModel, onNextPhase)
+        } else {
+            PlayerVotingScreen(viewModel, onVoted = {
+                isDimmed = true
+            })
+        }
+
         // Затемняющий слой
         if (dimAlpha > 0f) {
             Box(
@@ -59,13 +75,6 @@ fun VotingScreen(
                     .background(Color.Black.copy(alpha = dimAlpha))
             )
         }
-    }
-    if(uiState.isVotingFinished){
-        VotingEndedScreen(viewModel, onNextPhase)
-    } else {
-        PlayerVotingScreen(viewModel, onVoted = {
-            isDimmed = true
-        })
     }
 }
 

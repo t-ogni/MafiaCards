@@ -20,6 +20,7 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.*
+import com.yakovskij.mafiacards.features.localgame.presentation.game.gameover.GameOverScreen
 
 @Composable
 fun GameScreen(
@@ -62,13 +63,15 @@ fun GameScreen(
         Box(modifier = Modifier.padding(innerPadding)) {
             when (uiState.phase) {
                 GamePhase.SETUP -> DealCardsScreen(onNightStart = gameViewModel::advancePhase)
-                GamePhase.DAY_WITHOUT_VOTING -> NightPhaseScreen(onNextPhase = gameViewModel::advancePhase)
+                GamePhase.DAY_WITHOUT_VOTING -> PropScreen(onAction = gameViewModel::advancePhase)
                 GamePhase.NIGHT -> NightPhaseScreen(onNextPhase = gameViewModel::advancePhase)
                 GamePhase.NIGHT_ENDED -> NightResultsScreen(onNextPhase = gameViewModel::advancePhase)
                 GamePhase.DAY_DISCUSSION -> PropScreen(onAction = gameViewModel::advancePhase)
                 GamePhase.VOTING -> VotingScreen(onNextPhase = gameViewModel::advancePhase)
                 GamePhase.VOTING_ENDED -> VoteResultsScreen(onNextPhase = gameViewModel::advancePhase)
-                else -> PropScreen(onAction = gameViewModel::advancePhase)
+                GamePhase.END -> GameOverScreen(onExit=onExitConfirmed, onNewGame=gameViewModel::startNewGame)
+                //else -> PropScreen(onAction = gameViewModel::advancePhase)
+
             }
         }
     }

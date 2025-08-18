@@ -9,5 +9,6 @@ data class VotingUiState(
     val votingCandidates: List<Player> = emptyList(),
     val votes: Map<Player, Player> = emptyMap(),
     val selectedToVotePlayer: Player? = null,
-    val isVotingFinished: Boolean = false
+    val isVotingFinished: Boolean = false,
+    val isViewingEnded: Boolean = false,
 )

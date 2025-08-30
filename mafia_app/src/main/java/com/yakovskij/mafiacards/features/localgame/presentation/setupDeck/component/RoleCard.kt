@@ -9,8 +9,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -62,12 +64,20 @@ fun RoleCard(
                 .fillMaxWidth().padding(top = 12.dp, bottom = 12.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Box(modifier = Modifier.shadow(1.dp).border(1.dp, DarkRed).padding(3.dp)){
+            Box(modifier = Modifier
+                    .shadow(1.dp)
+                    .border(1.dp, DarkRed)
+                    .padding(3.dp)
+                    .fillMaxWidth()
+                    .heightIn(100.dp, 200.dp),
+
+                contentAlignment = Alignment.Center){
                 Image(
                     painter = painterResource(id = imageRes),
                     contentDescription = name,
                     modifier = Modifier.fillMaxWidth(),
-                    contentScale = ContentScale.FillWidth
+                    contentScale = ContentScale.FillHeight,
+                    alignment = Alignment.CenterEnd
                 )
             }
 
@@ -166,12 +176,14 @@ fun RoleCardDeckSetupPreview() {
 @Composable
 fun RoleCardDeckSetupPreview2() {
     MafiaCardsTheme {
-        RoleCard(
-            name = "Мирный",
-            count = 4,
-            isLocked = true,
-            imageRes = R.drawable.civfemale,
-            onCountChange = { },
-        )
+        Box (modifier = Modifier.height(400.dp).width(200.dp)) {
+            RoleCard(
+                name = "Мирный",
+                count = 4,
+                isLocked = true,
+                imageRes = R.drawable.civfemale,
+                onCountChange = { },
+            )
+        }
     }
 }

@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.yakovskij.mafiacards.features.howtoplay.presentation.localgame.HowToPlayScreen
 import com.yakovskij.mafiacards.features.loader.LoadingScreen
 import com.yakovskij.mafiacards.features.localgame.presentation.game.GameScreen
 import com.yakovskij.mafiacards.features.localgame.presentation.setupDeck.DeckScreen
@@ -18,6 +19,7 @@ sealed class Screen(val route: String) {
     object LocalGameSetupDeck : Screen("local_game_setup_deck")
     object LocalGameSetupPlayers : Screen("local_game_setup_players")
     object LocalGameScreen : Screen("local_game")
+    object HowToPlay : Screen("how_to_play")
 }
 
 @Composable
@@ -27,14 +29,22 @@ fun AppNavGraph(navController: NavHostController, startDestination: String = Scr
         composable(Screen.Loader.route) {
             LoadingScreen(
                 onLoaded = {
-                    navController.navigate(Screen.MainMenu.route)
+                    navController.navigate(Screen.MainMenu.route) {
+                        popUpTo(Screen.Loader.route) { inclusive = true }
+                        launchSingleTop = true
+                    }
                 }
             )
         }
+
         composable(Screen.MainMenu.route) {
             MainMenuScreen(
                 onCreateGame = {
                     navController.navigate(Screen.LocalGameSetup.route)
+                },
+                onStats = {},
+                onHowToPlay = {
+                    navController.navigate(Screen.HowToPlay.route)
                 }
             )
         }
@@ -70,5 +80,12 @@ fun AppNavGraph(navController: NavHostController, startDestination: String = Scr
             )
         }
 
+        composable(Screen.HowToPlay.route) {
+            HowToPlayScreen(
+                onFinish = {
+                    navController.popBackStack(Screen.MainMenu.route, false)
+                }
+            )
+        }
     }
 }

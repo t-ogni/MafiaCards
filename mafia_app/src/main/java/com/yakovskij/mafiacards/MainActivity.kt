@@ -10,11 +10,14 @@ import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.rememberNavController
+import com.yakovskij.mafiacards.core.errorhandler.ErrorManager
+import com.yakovskij.mafiacards.core.errorhandler.GlobalErrorBanner
 import com.yakovskij.mafiacards.core.ui.theme.MafiaCardsTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -23,6 +26,7 @@ import dagger.hilt.android.AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         enableEdgeToEdge(
             statusBarStyle = SystemBarStyle.dark(Color.Transparent.toArgb()),
             navigationBarStyle = SystemBarStyle.dark(Color.Transparent.toArgb())
@@ -35,9 +39,11 @@ class MainActivity : ComponentActivity() {
                         (context as? Activity)?.enableImmersiveMode()
                     }
                 }
-                
+
                 val navHost = rememberNavController()
-                AppNavGraph(navHost)
+                Box {
+                    AppNavGraph(navHost)
+                }
             }
         }
     }

@@ -61,6 +61,9 @@ dependencies {
     implementation("androidx.navigation:navigation-fragment:$nav_version")
     implementation("androidx.navigation:navigation-ui:$nav_version")
 
+    implementation("com.google.accompanist:accompanist-pager:0.30.1")
+    implementation("com.google.accompanist:accompanist-pager-indicators:0.30.1")
+
     val k_serialization_version = "1.7.3"
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:$k_serialization_version")
 

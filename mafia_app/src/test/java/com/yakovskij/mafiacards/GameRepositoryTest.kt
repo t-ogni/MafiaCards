@@ -20,10 +20,12 @@ class GameRepositoryTest {
     fun setup() {
         repository = GameRepository()
         settings = GameSettings(
-            totalPlayers = 4,
-            mafiaCount = 1,
-            doctorCount = 1,
-            detectiveCount = 1
+            roleCounts = mutableMapOf(
+                RoleType.MAFIA to 1,
+                RoleType.DOCTOR to 1,
+                RoleType.DETECTIVE to 1,
+                RoleType.CIVILIAN to 1
+            )
         )
         players = listOf(
             Player(1, "A"),

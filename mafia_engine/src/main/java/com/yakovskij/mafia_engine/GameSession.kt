@@ -64,7 +64,7 @@ class GameSession(
     }
 
     fun getPlayerById(playerId: Int): Player? {
-        return _state.players.firstOrNull()
+        return _state.players.firstOrNull { it.id == playerId }
     }
 
     fun getPlayers(): List<Player> {

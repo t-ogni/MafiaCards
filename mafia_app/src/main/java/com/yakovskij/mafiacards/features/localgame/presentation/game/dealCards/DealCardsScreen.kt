@@ -75,10 +75,11 @@ fun DealCardsScreen(
                         Text("Все роли розданы", style = MaterialTheme.typography.headlineMedium)
                         Spacer(Modifier.height(16.dp))
                         Button(onClick = {
-                            viewModel.proceedToNight()
+                            // Один переход фазы: SETUP -> DAY_WITHOUT_VOTING.
+                            // Раньше здесь дважды двигали фазу и пропускали дневной экран.
                             onNightStart()
                         }) {
-                            Text("Начать ночь")
+                            Text("Продолжить")
                         }
                     }
                 } else {

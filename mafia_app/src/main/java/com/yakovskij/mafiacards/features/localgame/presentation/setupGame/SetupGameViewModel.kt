@@ -60,20 +60,47 @@ class SetupGameViewModel @Inject constructor(
         settingsRepository.updateVoteTime(value)
     }
 
-    fun startGame() {
-        val totalPlayers = settingsRepository.players.value.size
+    fun startGame(): Boolean {
+        val players = settingsRepository.players.value
+        val totalPlayers = players.size
         val totalRoles = settingsRepository.getTotalRolesCount()
 
         if (totalRoles != totalPlayers) {
             _uiState.value = _uiState.value.copy(
                 errors = uiState.value.errors + "Нельзя начать игру — число ролей ($totalRoles) не совпадает с числом игроков ($totalPlayers)"
             )
-            return
+            return false
         }
 
-        gameRepository.saveSettings(settingsRepository.getGameSettings())
-        gameRepository.startGame(settingsRepository.players.value)
+        if (totalPlayers < 3) {
+            _uiState.value = _uiState.value.copy(
+                errors = uiState.value.errors + "Для игры нужно минимум 3 игрока"
+            )
+            return false
+        }
+
+        if (players.any { it.name.isBlank() }) {
+            _uiState.value = _uiState.value.copy(
+                errors = uiState.value.errors + "У всех игроков должно быть имя"
+            )
+            return false
+        }
+
+        return try {
+            gameRepository.saveSettings(settingsRepository.getGameSettings())
+            gameRepository.startGame(players)
+            true
+        } catch (e: Exception) {
+            _uiState.value = _uiState.value.copy(
+                errors = uiState.value.errors + (e.message ?: "Не удалось начать игру")
+            )
+            false
+        }
     }
 
-
+    fun consumeError() {
+        if (_uiState.value.errors.isNotEmpty()) {
+            _uiState.value = _uiState.value.copy(errors = _uiState.value.errors.drop(1))
+        }
+    }
 }

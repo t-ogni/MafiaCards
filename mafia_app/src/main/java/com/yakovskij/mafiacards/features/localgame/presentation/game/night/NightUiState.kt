@@ -16,4 +16,6 @@ data class NightUiState(
     val shouldInit: Boolean = true,
     val nightPlayersQueue: List<Player> = emptyList(),
     val nightIndex: Int = 0,
+    // Приватный результат проверки детектива, показывается только текущему игроку.
+    val revealText: String? = null,
 )

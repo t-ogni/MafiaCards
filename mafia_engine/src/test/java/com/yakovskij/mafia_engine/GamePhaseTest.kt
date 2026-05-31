@@ -40,21 +40,27 @@ class GamePhaseTest {
     }
     @Test
     fun `advancePhase should cycle through game phases`() {
+        assertEquals(GamePhase.SETUP, session.state.currentPhase)
+
+        engine.advancePhase() // SETUP → DAY_WITHOUT_VOTING
+        assertEquals(GamePhase.DAY_WITHOUT_VOTING, session.state.currentPhase)
+
+        engine.advancePhase() // DAY_WITHOUT_VOTING → NIGHT
         assertEquals(GamePhase.NIGHT, session.state.currentPhase)
 
         engine.advancePhase() // NIGHT → NIGHT_ENDED
         assertEquals(GamePhase.NIGHT_ENDED, session.state.currentPhase)
 
-        engine.advancePhase() // NIGHT → DAY_DISCUSSION
+        engine.advancePhase() // NIGHT_ENDED → DAY_DISCUSSION (никто не погиб — победителя нет)
         assertEquals(GamePhase.DAY_DISCUSSION, session.state.currentPhase)
 
         engine.advancePhase() // DAY_DISCUSSION → VOTING
         assertEquals(GamePhase.VOTING, session.state.currentPhase)
 
-        engine.advancePhase() // VOTING → VOTED
+        engine.advancePhase() // VOTING → VOTING_ENDED
         assertEquals(GamePhase.VOTING_ENDED, session.state.currentPhase)
 
-        engine.advancePhase() // VOTED → NIGHT
+        engine.advancePhase() // VOTING_ENDED → NIGHT (победителя нет)
         assertEquals(GamePhase.NIGHT, session.state.currentPhase)
     }
 

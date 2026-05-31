@@ -5,9 +5,13 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.KeyboardArrowRight
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
@@ -31,8 +35,19 @@ fun SetupGameScreen(
     val dayTime by viewModel.dayTime
     val nightTime by viewModel.nightTime
     val voteTime by viewModel.voteTime
+    val uiState by viewModel.uiState
+
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(uiState.errors) {
+        uiState.errors.firstOrNull()?.let { message ->
+            snackbarHostState.showSnackbar(message)
+            viewModel.consumeError()
+        }
+    }
 
     StyledVineBackground()
+    Box(modifier = Modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxSize().systemBarsPadding().padding(12.dp)) {
             Spacer(Modifier.height(24.dp))
             StyledHeadlineMedium("Настройки")
@@ -72,13 +87,24 @@ fun SetupGameScreen(
                     text = "Начать игру",
                     modifier = Modifier.weight(1f),
                     onClick = {
-                        viewModel.startGame()
-                        onStartClick()
+                        // Навигация только если игра действительно стартовала.
+                        if (viewModel.startGame()) {
+                            onStartClick()
+                        }
                     }
                 )
             }
 
         }
+
+        SnackbarHost(
+            hostState = snackbarHostState,
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .systemBarsPadding()
+                .padding(16.dp)
+        )
+    }
 }
 
 @Composable

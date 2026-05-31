@@ -39,13 +39,21 @@ open class GameEngine(
     fun calculateVotesAndJail(): Int? = voteProcessor.calculateVotesAndJail()
     fun performNightActions() = nightProcessor.performNightActions()
 
+    // Возвращает роль-представителя победившей команды, либо null, если игра ещё идёт.
+    // CIVILIAN -> победа мирных, MAFIA -> победа мафии, MANIAC -> победа маньяка.
     fun checkWinCondition(): RoleType? {
-        val players = session.getPlayers()
-        val mafiaAlive = players.count { it.isAlive && it.role?.side == TeamSide.MAFIA }
-        val civAlive = players.count { it.isAlive && it.role?.side == TeamSide.CIVILIANS }
+        val alive = session.getPlayers().filter { it.isAlive }
+        val mafiaAlive = alive.count { it.role?.side == TeamSide.MAFIA }
+        val maniacAlive = alive.count { it.role?.side == TeamSide.MANIACS }
+        val nonMafiaAlive = alive.size - mafiaAlive
+
         return when {
-            mafiaAlive == 0 -> RoleType.CIVILIAN
-            civAlive == 1 && mafiaAlive > 0 -> RoleType.MAFIA
+            // Все опасные роли мертвы — побеждает город.
+            mafiaAlive == 0 && maniacAlive == 0 -> RoleType.CIVILIAN
+            // Маньяк остался один на один (или вовсе один) и мафии нет — побеждает маньяк.
+            maniacAlive > 0 && mafiaAlive == 0 && alive.size <= 2 -> RoleType.MANIAC
+            // Мафия сравнялась/превзошла остальных и одиночек-маньяков нет — побеждает мафия.
+            mafiaAlive > 0 && maniacAlive == 0 && mafiaAlive >= nonMafiaAlive -> RoleType.MAFIA
             else -> null
         }
     }
@@ -73,7 +81,19 @@ open class GameEngine(
         return nextPhase
     }
     fun advancePhase() {
-        onOldPhaseEnded(session.state.currentPhase)
+        val currentPhase = session.state.currentPhase
+        onOldPhaseEnded(currentPhase)
+
+        // После просмотра газеты (NIGHT_ENDED) и итогов голосования (VOTING_ENDED)
+        // проверяем, не закончилась ли игра.
+        if (currentPhase == GamePhase.NIGHT_ENDED || currentPhase == GamePhase.VOTING_ENDED) {
+            val winner = checkWinCondition()
+            if (winner != null) {
+                endGame(winner)
+                return
+            }
+        }
+
         val nextPhase = getNextPhase()
         session.setPhase(nextPhase)
         onNewPhase(nextPhase)
@@ -82,12 +102,6 @@ open class GameEngine(
 
     private fun onOldPhaseEnded(phase: GamePhase) {
         when (phase) {
-            GamePhase.NIGHT_ENDED -> {
-                checkWinCondition()  // после просмотра газеты посмотрим, есть ли победа
-            }
-            GamePhase.VOTING_ENDED -> {
-                checkWinCondition()  // после тюрьмы посмотрим, есть ли победа
-            }
             else -> {}
         }
     }

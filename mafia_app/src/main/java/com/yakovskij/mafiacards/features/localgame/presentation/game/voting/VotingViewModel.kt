@@ -18,8 +18,8 @@ open class VotingViewModel @Inject constructor(
     private val _uiState = mutableStateOf(VotingUiState())
     open val uiState: State<VotingUiState> = _uiState
 
-    private lateinit var players: List<Player>
-    private lateinit var alive: List<Player>
+    private var players: List<Player> = emptyList()
+    private var alive: List<Player> = emptyList()
 
     init {
        initState()
@@ -28,26 +28,43 @@ open class VotingViewModel @Inject constructor(
     open fun initState() {
         if (!_uiState.value.shouldInit) return
         players = gameRepository.getState().players
-        alive = players.filter { it.isAlive == true }
+        alive = players.filter { it.isAlive }
+
+        if (alive.isEmpty()) return
 
         _uiState.value = _uiState.value.copy(
             votingCandidates = alive,
             currentPlayer = alive.first(),
-            currentIndex = 0
+            currentIndex = 0,
+            votes = emptyMap(),
+            shouldInit = false
         )
     }
 
     fun clearState() {
         _uiState.value = VotingUiState()
     }
+
     open fun addVote(performer: Player, target: Player){
         gameRepository.getEngine().player(performer.id).voted(target.id)
+        _uiState.value = _uiState.value.copy(
+            votes = _uiState.value.votes + (performer to target)
+        )
     }
 
     fun updateVote(performerId: Int, targetId: Int){
         val playerController = gameRepository.getEngine().player(performerId)
         playerController.clearVote()
         playerController.voted(targetId)
+
+        // Синхронизируем отображаемую карту голосов.
+        val voter = alive.find { it.id == performerId }
+        val target = alive.find { it.id == targetId }
+        if (voter != null && target != null) {
+            _uiState.value = _uiState.value.copy(
+                votes = _uiState.value.votes + (voter to target)
+            )
+        }
     }
 
     fun selectPlayerToVote(target: Player){
@@ -69,7 +86,7 @@ open class VotingViewModel @Inject constructor(
                 selectedToVotePlayer = null
             )
         } else {
-            // Все игроки посмотрели карты
+            // Все игроки проголосовали
             _uiState.value = state.copy(
                 isVotingFinished = true
             )
@@ -77,7 +94,8 @@ open class VotingViewModel @Inject constructor(
     }
 
     fun confirmVote() {
-        addVote(_uiState.value.currentPlayer, _uiState.value.selectedToVotePlayer!!)
+        val target = _uiState.value.selectedToVotePlayer ?: return
+        addVote(_uiState.value.currentPlayer, target)
         nextPlayerOrFinish()
     }
 
@@ -89,4 +107,3 @@ open class VotingViewModel @Inject constructor(
         gameRepository.getEngine().calculateVotesAndJail()
     }
 }
-

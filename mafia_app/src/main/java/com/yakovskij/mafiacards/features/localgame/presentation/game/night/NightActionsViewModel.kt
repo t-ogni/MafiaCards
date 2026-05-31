@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.yakovskij.mafia_engine.*
 import com.yakovskij.mafia_engine.domain.*
 import com.yakovskij.mafia_engine.domain.role.RoleType
+import com.yakovskij.mafia_engine.domain.role.TeamSide
 import com.yakovskij.mafiacards.features.localgame.data.GameRepository
 import com.yakovskij.mafiacards.features.localgame.data.gamesettings.GameSettingsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -47,6 +48,7 @@ class NightActionsViewModel @Inject constructor(
     }
 
     fun resetNightState() {
+        timerJob?.cancel()
         _uiState.value = NightUiState()
     }
 
@@ -56,8 +58,8 @@ class NightActionsViewModel @Inject constructor(
 
         timerJob?.cancel() // остановить предыдущий таймер, если есть
         if (_uiState.value.nightIndex >= _uiState.value.nightPlayersQueue.size) {
-            _uiState.value = _uiState.value.copy(isNightFinished = true)
             engine.performNightActions()
+            _uiState.value = _uiState.value.copy(isNightFinished = true)
             return
         }
         val index = _uiState.value.nightIndex
@@ -69,20 +71,24 @@ class NightActionsViewModel @Inject constructor(
             RoleType.MAFIA -> "Вы мафия. Выберите игрока для устранения:"
             RoleType.DOCTOR -> "Вы доктор. Кого будете лечить?"
             RoleType.DETECTIVE -> "Вы детектив. Кого будете проверять?"
+            RoleType.MANIAC -> "Вы маньяк. Кого устраните этой ночью?"
+            RoleType.SLUT -> "Вы блудница. Кого навестите этой ночью?"
             RoleType.CIVILIAN, null -> "Вы мирный. Сделайте вид, что участвуете ночью.\nКто вам больше всего нравится?"
             else ->  "Вы — ${role.title}. Выполните ваше действие."
         }
 
         val allTargets = gameRepository.getState().players
-        val aliveTargets = allTargets.filter { it.isAlive  && it.id != player.id }
+        val aliveTargets = allTargets.filter { it.isAlive && it.id != player.id }
         val aliveTargetsIncludingItself = allTargets.filter { it.isAlive }
 
         val targets : List<Player> = when (role) {
             RoleType.MAFIA -> aliveTargets.filter { it.role != RoleType.MAFIA }
             RoleType.DOCTOR -> aliveTargetsIncludingItself
             RoleType.DETECTIVE -> aliveTargets
+            RoleType.MANIAC -> aliveTargets
+            RoleType.SLUT -> aliveTargets
             RoleType.CIVILIAN, null -> aliveTargetsIncludingItself
-            else ->  allTargets
+            else ->  aliveTargets
         }
 
 
@@ -92,6 +98,7 @@ class NightActionsViewModel @Inject constructor(
             promptText = prompt,
             availableTargets = targets,
             isActionTaken = false,
+            revealText = null,
             timeLeftSeconds = settingsRepository.getNightTime().toFloat()
         )
     }
@@ -124,16 +131,37 @@ class NightActionsViewModel @Inject constructor(
 
         if (target != null) {
             engine.player(player.id).targets(target.id)
-            // DeadPlayerAction: Мёртвый игрок не может взаимодействовать при второй ночи. почему-то убитый (мафией) игрок появился во второй ночи.
         }
+
+        timerJob?.cancel() // остановить таймер
 
         _uiState.value = _uiState.value.copy(
             isActionTaken = true,
             isTimeExpired = false
         )
 
-        timerJob?.cancel() // остановить таймер
+        // Детектив получает приватный результат проверки прямо на своём ходу,
+        // чтобы информация не попадала в общую газету.
+        if (player.role == RoleType.DETECTIVE && target != null) {
+            val isMafia = target.role?.side == TeamSide.MAFIA
+            val reveal = if (isMafia) {
+                "${target.name} — на стороне мафии!"
+            } else {
+                "${target.name} — не мафия."
+            }
+            _uiState.value = _uiState.value.copy(revealText = reveal)
+            return // ждём, пока игрок закроет результат
+        }
 
+        proceedToNextUser()
+    }
+
+    fun dismissReveal() {
+        _uiState.value = _uiState.value.copy(revealText = null)
+        proceedToNextUser()
+    }
+
+    private fun proceedToNextUser() {
         viewModelScope.launch {
             delay(500)
             _uiState.value = _uiState.value.copy(

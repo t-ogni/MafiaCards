@@ -25,7 +25,7 @@ class GameSettingsRepository @Inject constructor(
 
     private val dataStore = context.gameSettingsDataStore
 
-    private var gameSettings: GameSettings = GameSettings()
+    private var gameSettings: GameSettings = defaultGameSettings()
     private var timerSettings: TimerSettings = TimerSettings()
 
     private val _players = mutableStateOf<List<Player>>(emptyList())
@@ -33,9 +33,23 @@ class GameSettingsRepository @Inject constructor(
 
     companion object {
         private val SETTINGS_KEY = stringPreferencesKey("game_settings_json")
+
+        // Стартовая сбалансированная колода на 6 игроков, чтобы игра была
+        // играбельной сразу после установки.
+        fun defaultGameSettings(): GameSettings = GameSettings(
+            roleCounts = mutableMapOf(
+                RoleType.MAFIA to 1,
+                RoleType.DOCTOR to 1,
+                RoleType.DETECTIVE to 1,
+                RoleType.CIVILIAN to 3
+            )
+        )
     }
 
     init {
+        // Синхронно выставляем список игроков по умолчанию, чтобы экраны,
+        // читающие настройки при создании, не видели пустую игру.
+        syncPlayerList(gameSettings.getTotalRolesCount())
         CoroutineScope(Dispatchers.IO).launch {
             loadSettings()
             syncPlayerList(gameSettings.getTotalRolesCount())
@@ -48,7 +62,11 @@ class GameSettingsRepository @Inject constructor(
     override suspend fun loadSettings() {
         val json = dataStore.data.first()[SETTINGS_KEY]
         if (!json.isNullOrBlank()) {
-            gameSettings = parseJsonToGameSettings(json)
+            val loaded = parseJsonToGameSettings(json)
+            // Игнорируем повреждённые/пустые сохранения, оставляя дефолт.
+            if (loaded.getTotalRolesCount() > 0) {
+                gameSettings = loaded
+            }
         }
     }
 

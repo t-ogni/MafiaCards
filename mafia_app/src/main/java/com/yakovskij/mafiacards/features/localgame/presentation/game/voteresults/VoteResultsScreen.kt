@@ -56,6 +56,9 @@ fun VoteResultsScreen(
                 color = LightTextColor
             )
         }
-        StyledOutlinedButton("Продолжить", onClick = onNextPhase)
+        StyledOutlinedButton("Продолжить", onClick = {
+            viewModel.stopTimer()
+            onNextPhase()
+        })
     }
 }
